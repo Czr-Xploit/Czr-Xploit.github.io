@@ -2,7 +2,7 @@
   "title": "CzrXplo1t",
   "handle": "CzrXplo1t",
   "author": "CzrXplo1t",
-  "base_url": "https://CzrXplo1t.github.io",
+  "base_url": "https://Czr-Xploit.github.io",
 
   "tagline": {
     "es": "investigación ofensiva, ingeniería inversa y notas de laboratorio",
@@ -45,7 +45,7 @@
   "pgp_key_path": "",
 
   "social": [
-    { "label": "GitHub", "url": "https://github.com/CzrXplo1t", "handle": "@CzrXplo1t" },
+    { "label": "GitHub", "url": "https://github.com/Czr-Xploit", "handle": "@Czr-Xploit" },
     { "label": "RSS", "url": "/feed.xml", "handle": "feed.xml" }
   ],
 

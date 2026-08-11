@@ -1,4 +1,4 @@
-# CzrXplo1t.github.io
+# Czr-Xploit.github.io
 
 Blog bilingüe (ES/EN) de investigación en seguridad, con un generador estático propio
 escrito en **Python puro, sin una sola dependencia de terceros**.
@@ -158,14 +158,14 @@ Pie de figura. Se reproduce al hacer clic, nunca en automático.
 
 ## Despliegue en GitHub Pages
 
-1. Crea el repositorio **`CzrXplo1t.github.io`** en tu cuenta.
+1. Crea el repositorio **`Czr-Xploit.github.io`** en tu cuenta.
 2. Sube este directorio:
 
    ```bash
    git add -A
    git commit -m "Sitio inicial"
    git branch -M main
-   git remote add origin git@github.com:CzrXplo1t/CzrXplo1t.github.io.git
+   git remote add origin git@github.com:Czr-Xploit/Czr-Xploit.github.io.git
    git push -u origin main
    ```
 

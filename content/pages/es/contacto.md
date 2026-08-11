@@ -33,7 +33,7 @@ Cifra cualquier cosa que contenga detalles de una vulnerabilidad no publicada, d
 de un cliente, o información que no querrías ver reenviada.
 
 ::: terminal title="czrxplo1t@lab"
-czrxplo1t@lab:~$ curl -s https://CzrXplo1t.github.io/static/pgp/czrxplo1t.asc | gpg --import
+czrxplo1t@lab:~$ curl -s https://Czr-Xploit.github.io/static/pgp/czrxplo1t.asc | gpg --import
 gpg: key 0000000000000000: public key "CzrXplo1t" imported
 gpg: Total number processed: 1
 gpg:               imported: 1
