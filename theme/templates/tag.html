@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> grep -rl '#{{ tag.name }}' ./content/</p>
+    <h1 class="page-title glitch" data-text="#{{ tag.name }}">#{{ tag.name }}</h1>
+    <p class="page-count">{{ tag.count }} {{ t.stats_posts }}</p>
+    <p class="page-back"><a class="link-arrow" href="{{ page.tags_url }}"><span aria-hidden="true">←</span> {{ t.tags_title }}</a></p>
+  </header>
+
+  <h2 class="sr-only">{{ t.latest }}</h2>
+
+  <div class="grid grid-cards">
+    {% for item in listing.documents %}{% include "card.html" %}
+    {% empty %}<p class="empty">{{ t.empty_list }}</p>{% endfor %}
+  </div>
+
+</div>
+
+{% endblock %}

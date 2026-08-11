@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> ls -1 ./arsenal/</p>
+    <h1 class="page-title glitch" data-text="{{ t.arsenal_title }}">{{ t.arsenal_title }}</h1>
+    <p class="page-intro">{{ t.arsenal_intro }}</p>
+    <p class="page-count">{{ total_tools }} {{ t.stats_tools }}</p>
+  </header>
+
+  <section class="filters" aria-label="{{ t.search_title }}">
+    <div class="filter-row">
+      <label class="filter-label" for="filter-query">
+        <span class="prompt" aria-hidden="true">grep</span>
+        <span class="sr-only">{{ t.search_placeholder }}</span>
+      </label>
+      <input type="search" id="filter-query" class="filter-input" data-filter="query"
+             placeholder="{{ t.search_placeholder }}" autocomplete="off" spellcheck="false" />
+    </div>
+    <div class="filter-row filter-chips" role="group" aria-label="{{ t.tags_title }}">
+      <button type="button" class="chip chip-filter is-active" data-filter="tag" data-value="">all</button>
+      {% for category in categories %}
+      <button type="button" class="chip chip-filter" data-filter="tag" data-value="{{ category.name }}">{{ category.name }}</button>
+      {% endfor %}
+    </div>
+    <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+  </section>
+
+  {% for category in categories %}
+  <section class="arsenal-group" aria-labelledby="cat-{{ category.name }}">
+    <h2 class="section-title" id="cat-{{ category.name }}">
+      <span class="section-marker" aria-hidden="true">##</span> {{ category.name }}
+      <span class="section-count">{{ category.count }}</span>
+    </h2>
+
+    <ul class="arsenal-list">
+      {% for entry in category.entries %}
+      <li class="arsenal-item card" id="tool-{{ entry.slug }}" data-tags="{{ category.name }},{{ entry.tags | join:',' }}">
+        <div class="arsenal-head">
+          <h3 class="arsenal-name">
+            {% if entry.url %}<a href="{{ entry.url }}">{{ entry.name }}</a>{% else %}{{ entry.name }}{% endif %}
+          </h3>
+          {% if entry.featured %}<span class="badge badge-featured" title="{{ t.featured }}">★</span>{% endif %}
+        </div>
+
+        <p class="arsenal-summary">{{ entry.summary }}</p>
+
+        {% if entry.notes %}<div class="arsenal-notes prose prose-compact">{{ entry.notes }}</div>{% endif %}
+
+        <p class="arsenal-meta">
+          {% if entry.license %}<span class="chip chip-license">{{ entry.license }}</span>{% endif %}
+          {% if entry.language %}<span class="chip chip-lang">{{ entry.language }}</span>{% endif %}
+          {% for tag in entry.tags %}<span class="tag">#{{ tag }}</span>{% endfor %}
+        </p>
+      </li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% empty %}
+  <p class="empty">{{ t.empty_list }}</p>
+  {% endfor %}
+
+</div>
+
+{% endblock %}

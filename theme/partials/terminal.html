@@ -1,0 +1,24 @@
+<div class="term" id="term" hidden>
+  <div class="term-panel" role="dialog" aria-modal="true" aria-labelledby="term-label">
+
+    <div class="term-chrome">
+      <span class="dot dot-r" aria-hidden="true"></span>
+      <span class="dot dot-y" aria-hidden="true"></span>
+      <span class="dot dot-g" aria-hidden="true"></span>
+      <h2 class="term-title" id="term-label">{{ site.handle | lower }}@czr — {{ t.terminal_title }}</h2>
+      <button type="button" class="term-close" data-action="close-terminal" aria-label="{{ t.terminal_close }}">×</button>
+    </div>
+
+    <div class="term-body" id="term-output" role="log" aria-live="polite" aria-atomic="false" tabindex="0"></div>
+
+    <form class="term-form" id="term-form" autocomplete="off">
+      <label class="sr-only" for="term-input">{{ t.terminal_title }}</label>
+      <span class="term-prompt" id="term-prompt" aria-hidden="true">{{ site.handle | lower }}@czr:~$</span>
+      <input type="text" class="term-input" id="term-input" name="cmd"
+             autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+             aria-describedby="term-hint" />
+    </form>
+
+    <p class="term-hint" id="term-hint">{{ t.terminal_hint }}</p>
+  </div>
+</div>

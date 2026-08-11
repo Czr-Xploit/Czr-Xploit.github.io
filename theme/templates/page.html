@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script type="application/ld+json">{{ structured_data }}</script>
+{% endblock %}
+
+{% block content %}
+
+<article class="article article-page">
+
+  <header class="article-head">
+    <div class="wrap wrap-narrow">
+      <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> cat ./{{ doc.slug }}.md</p>
+      <h1 class="article-title glitch" data-text="{{ doc.title }}">{{ doc.title }}</h1>
+      {% if doc.summary %}<p class="article-summary">{{ doc.summary }}</p>{% endif %}
+    </div>
+  </header>
+
+  <div class="wrap wrap-narrow">
+    <div class="prose" id="article-body">
+      {{ content }}
+    </div>
+  </div>
+
+</article>
+
+{% endblock %}

@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap wrap-narrow">
+
+  <header class="page-head">
+    <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> grep -ri "$QUERY" ./content/</p>
+    <h1 class="page-title glitch" data-text="{{ t.search_title }}">{{ t.search_title }}</h1>
+  </header>
+
+  <form class="search-form" id="search-form" role="search" action="" method="get">
+    <label class="sr-only" for="search-input">{{ t.search_placeholder }}</label>
+    <span class="search-prompt" aria-hidden="true">&gt;</span>
+    <input type="search" id="search-input" name="q" class="search-input"
+           placeholder="{{ t.search_placeholder }}" autocomplete="off" spellcheck="false"
+           aria-describedby="search-status" />
+    <button type="submit" class="btn btn-primary">{{ t.search_title }}</button>
+  </form>
+
+  <p class="search-status" id="search-status" role="status" aria-live="polite"></p>
+
+  <ul class="search-results" id="search-results"></ul>
+
+  <noscript>
+    <p class="callout callout-note">{{ t.js_required }}</p>
+    <p><a class="link-arrow" href="{{ page.blog_url }}">{{ t.all_posts }} <span aria-hidden="true">→</span></a></p>
+  </noscript>
+
+</div>
+
+{% endblock %}

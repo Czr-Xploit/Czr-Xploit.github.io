@@ -1,0 +1,45 @@
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+
+    <div class="footer-col footer-brand">
+      <p class="footer-sig">
+        <span class="prompt" aria-hidden="true">{{ site.handle | lower }}@{{ lang }}:~$</span>
+        <span class="footer-tag">{{ site.tagline[lang] }}</span>
+      </p>
+      <p class="footer-note">{{ t.footer_built }}</p>
+    </div>
+
+    <nav class="footer-col" aria-label="{{ t.main_nav }}">
+      <ul class="footer-list">
+        {% for item in nav %}
+        <li><a href="{{ item.url }}">{{ item.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+
+    <div class="footer-col">
+      <ul class="footer-list">
+        {% for entry in social %}
+        <li><a href="{{ entry.url }}">{{ entry.label }} <span class="footer-handle">{{ entry.handle }}</span></a></li>
+        {% endfor %}
+        <li><a href="{{ page.feed_url }}">{{ t.footer_feed }}</a></li>
+        {% if site.pgp_key_path %}<li><a href="{{ site.pgp_key_path }}">{{ t.footer_pgp }}</a></li>{% endif %}
+        <li><a href="/.well-known/security.txt">security.txt</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col footer-stats">
+      <dl class="stat-grid">
+        <div class="stat"><dt>{{ t.stats_posts }}</dt><dd>{{ stats.posts }}</dd></div>
+        <div class="stat"><dt>{{ t.stats_writeups }}</dt><dd>{{ stats.writeups }}</dd></div>
+        <div class="stat"><dt>{{ t.stats_tools }}</dt><dd>{{ stats.tools }}</dd></div>
+      </dl>
+    </div>
+
+  </div>
+
+  <div class="wrap footer-legal">
+    <p>&copy; {{ year }} {{ site.author }}. {{ t.footer_license }}</p>
+    <p class="footer-build"><span aria-hidden="true">build</span> {{ build_date }}</p>
+  </div>
+</footer>

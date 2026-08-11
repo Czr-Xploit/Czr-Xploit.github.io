@@ -1,0 +1,360 @@
+/* ==========================================================================
+   layout.css — page scaffolding, wrappers, grids, article layout
+   ========================================================================== */
+
+@layer layout {
+
+  .page {
+    display: flex;
+    flex-direction: column;
+    min-height: 100svh;
+    position: relative;
+    z-index: var(--z-base);
+  }
+
+  .main {
+    flex: 1 0 auto;
+    display: block;
+    padding-block: var(--sp-6) var(--section-gap);
+  }
+
+  /* Article templates carry their own top spacing in .article-head, so the
+     main padding would double it.  Body classes are page-SECTION, and a
+     post and a listing share the same section name — hence :has() rather
+     than a class test.  Without :has() support the page is a little roomier,
+     which is a non-issue. */
+  .main:has(> .article) {
+    padding-top: 0;
+  }
+
+  /* --- Wrappers ---------------------------------------------------------
+     env() is folded into the inline padding rather than applied to <body>,
+     so the fixed header and the flowing content share one gutter value. */
+  .wrap {
+    width: 100%;
+    max-width: var(--wrap-max);
+    margin-inline: auto;
+    padding-inline: max(var(--gutter), env(safe-area-inset-left, 0px), env(safe-area-inset-right, 0px));
+  }
+
+  .wrap-narrow {
+    max-width: var(--wrap-narrow);
+  }
+
+  /* --- Sections --------------------------------------------------------- */
+
+  .section {
+    padding-block: var(--section-gap);
+  }
+
+  .section:first-child {
+    padding-top: var(--sp-6);
+  }
+
+  .section-alt {
+    background:
+      linear-gradient(180deg, transparent, var(--bg-alt) 12%, var(--bg-alt) 88%, transparent);
+  }
+
+  .section-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    flex-wrap: wrap;
+    font-size: var(--fs-lg);
+    margin-bottom: var(--sp-5);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .section-marker {
+    color: var(--accent);
+    font-weight: 700;
+    text-shadow: var(--glow-text);
+  }
+
+  .section-count {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .section-more {
+    margin-top: var(--sp-5);
+  }
+
+  /* The featured band is the one place a listing gets extra air; the cards
+     inside it are already wider via grid-featured. */
+  .section-featured {
+    padding-bottom: var(--sp-6);
+  }
+
+  /* --- Grids -------------------------------------------------------------
+     auto-fit + minmax gives a real fluid grid without a single breakpoint.
+     `content-visibility` on the children keeps a 12-card listing off the
+     initial layout pass; the intrinsic size is the measured median card so
+     the scrollbar does not jump when they render. */
+  .grid {
+    display: grid;
+    gap: var(--sp-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 40rem) {
+    .grid-cards,
+    .grid-featured {
+      grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+    }
+  }
+
+  @media (min-width: 72rem) {
+    .grid-featured {
+      grid-template-columns: repeat(auto-fit, minmax(24rem, 1fr));
+    }
+  }
+
+  .grid-cards > .card,
+  .grid-featured > .card {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 22rem;
+  }
+
+  /* --- Page head (listings, tags, search, 404) --------------------------- */
+
+  .page-head {
+    padding-block: var(--sp-6) var(--sp-7);
+    border-bottom: var(--hair) solid var(--border-soft);
+    margin-bottom: var(--sp-7);
+  }
+
+  .page-title {
+    font-size: var(--fs-3xl);
+    margin-block: var(--sp-2);
+  }
+
+  .page-intro {
+    color: var(--text-muted);
+    max-width: 58ch;
+    font-size: var(--fs-md);
+    line-height: 1.6;
+  }
+
+  .page-count,
+  .page-back {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-sm);
+    color: var(--text-muted);
+  }
+
+  /* --- Hero -------------------------------------------------------------- */
+
+  .hero {
+    padding-block: clamp(2.5rem, 1.5rem - -6vw, 6rem) var(--sp-8);
+    position: relative;
+  }
+
+  .hero-inner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-4);
+    max-width: 62rem;
+  }
+
+  .hero-title {
+    font-size: var(--fs-hero);
+    line-height: 1.02;
+    margin-block: var(--sp-1);
+    letter-spacing: -0.03em;
+  }
+
+  .hero-tagline {
+    font-size: var(--fs-lg);
+    color: var(--text);
+    max-width: 40ch;
+  }
+
+  .hero-desc {
+    font-family: var(--font-prose);
+    font-size: var(--fs-base);
+    line-height: var(--lh-body);
+    color: var(--text-muted);
+    max-width: 62ch;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    margin-top: var(--sp-3);
+  }
+
+  .hero-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-6);
+    padding-top: var(--sp-5);
+    border-top: var(--hair) solid var(--border-soft);
+    max-width: 44rem;
+  }
+
+  @media (min-width: 48rem) {
+    .hero-stats {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+
+  /* --- Article ----------------------------------------------------------- */
+
+  .article {
+    display: block;
+  }
+
+  .article-head {
+    padding-block: var(--sp-7) var(--sp-6);
+  }
+
+  .article-title {
+    font-size: var(--fs-3xl);
+    margin-block: var(--sp-3) var(--sp-4);
+  }
+
+  .article-summary {
+    font-family: var(--font-prose);
+    font-size: var(--fs-md);
+    line-height: 1.62;
+    color: var(--text-muted);
+    max-width: 66ch;
+  }
+
+  /* Two-column reading layout.  Below 64rem the TOC is a normal block that
+     sits above the prose (DOM order already puts it first), which is why no
+     `order` juggling is needed at any breakpoint. */
+  .article-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--article-gap);
+    align-items: start;
+  }
+
+  @media (min-width: 64rem) {
+    .article-layout {
+      grid-template-columns: var(--toc-w) minmax(0, 1fr);
+    }
+  }
+
+  .prose {
+    min-width: 0;
+    max-width: var(--measure);
+  }
+
+  .article-footer {
+    padding-block: var(--sp-8) var(--sp-6);
+    margin-top: var(--sp-8);
+    border-top: var(--hair) solid var(--border-soft);
+  }
+
+  /* A writeup leads with the fact box, so the summary needs less air under
+     it than a post summary does. */
+  .article-writeup .article-summary {
+    margin-bottom: var(--sp-2);
+  }
+
+  /* A standalone page has no TOC rail, so its prose is already centred by
+     .wrap-narrow; the measure cap still applies for very wide viewports. */
+  .article-page .prose {
+    max-width: var(--measure);
+    margin-inline: auto;
+  }
+
+  /* --- Related block ------------------------------------------------------ */
+
+  .related {
+    margin-top: var(--sp-8);
+  }
+
+  /* --- Arsenal ------------------------------------------------------------ */
+
+  .arsenal-group {
+    margin-bottom: var(--sp-8);
+  }
+
+  .arsenal-list {
+    display: grid;
+    gap: var(--sp-4);
+    grid-template-columns: 1fr;
+    margin: 0;
+    padding: 0;
+  }
+
+  @media (min-width: 52rem) {
+    .arsenal-list {
+      grid-template-columns: repeat(auto-fit, minmax(21rem, 1fr));
+    }
+  }
+
+  .arsenal-list > .arsenal-item {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 14rem;
+  }
+
+  /* --- Error page ---------------------------------------------------------- */
+
+  .error-page {
+    padding-block: var(--sp-9) var(--sp-10);
+    text-align: center;
+  }
+
+  .error-code {
+    font-size: clamp(4rem, 2rem - -14vw, 10rem);
+    line-height: 0.9;
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    color: var(--accent);
+    text-shadow: var(--glow-md);
+    margin-bottom: var(--sp-4);
+  }
+
+  .error-page .page-head {
+    border: 0;
+    margin-bottom: var(--sp-5);
+  }
+
+  .error-page .terminal-block,
+  .error-page .error-term {
+    text-align: left;
+    margin-inline: auto;
+    max-width: 40rem;
+  }
+
+  .error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    justify-content: center;
+    margin-top: var(--sp-6);
+  }
+
+  /* --- Two/three column prose containers (::: columns) --------------------- */
+
+  .columns {
+    display: grid;
+    gap: var(--sp-5);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 48rem) {
+    .columns-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .columns-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+
+  /* --- Empty state ---------------------------------------------------------- */
+
+  .empty {
+    grid-column: 1 / -1;
+    padding: var(--sp-7) var(--sp-4);
+    text-align: center;
+    color: var(--text-muted);
+    border: var(--hair) dashed var(--border-ui);
+    border-radius: var(--r-md);
+  }
+}

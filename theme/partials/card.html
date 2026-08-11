@@ -1,0 +1,44 @@
+<article class="card card-{{ item.kind }}"
+         data-tags="{{ item.tags | join:',' }}"
+         data-platform="{{ item.platform }}"
+         data-difficulty="{{ item.difficulty }}"
+         data-system="{{ item.os_name }}">
+
+  <a class="card-link" href="{{ item.url }}">
+    <span class="sr-only">{{ item.title }}</span>
+  </a>
+
+  {% if item.cover %}
+  <div class="card-media">
+    <img src="{{ item.cover }}" alt="" width="640" height="360" loading="lazy" decoding="async" />
+  </div>
+  {% endif %}
+
+  <div class="card-body">
+    <p class="card-meta">
+      <span class="card-kind" data-kind="{{ item.kind }}">{{ item.kind }}</span>
+      <time class="card-date" datetime="{{ item.iso_date }}">{{ item.date | localdate:lang }}</time>
+      <span class="card-read">{{ item.reading_minutes }} {{ t.reading_time }}</span>
+      {% if item.draft %}<span class="badge badge-draft">{{ t.draft_badge }}</span>{% endif %}
+    </p>
+
+    <h3 class="card-title">{{ item.title }}</h3>
+    <p class="card-summary">{{ item.summary | truncate:180 }}</p>
+
+    {% if item.is_writeup %}
+    <p class="card-writeup-meta">
+      {% if item.platform %}<span class="chip chip-platform">{{ item.platform }}</span>{% endif %}
+      {% if item.difficulty %}<span class="chip chip-difficulty" data-level="{{ item.difficulty | lower }}">{{ item.difficulty }}</span>{% endif %}
+      {% if item.os_name %}<span class="chip chip-os">{{ item.os_name }}</span>{% endif %}
+    </p>
+    {% endif %}
+
+    {% if item.tags %}
+    <ul class="card-tags">
+      {% for tag in item.tags | slice:0,4 %}
+      <li><span class="tag">#{{ tag }}</span></li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+  </div>
+</article>

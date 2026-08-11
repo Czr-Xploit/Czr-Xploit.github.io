@@ -1,0 +1,60 @@
+<header class="site-header">
+  <div class="wrap header-inner">
+
+    <a class="brand" href="{{ page.home_url }}" aria-label="{{ site.handle }} — {{ t.nav_home }}">
+      <span class="brand-bracket" aria-hidden="true">[</span><span
+        class="brand-name glitch" data-text="{{ site.handle }}">{{ site.handle }}</span><span
+        class="brand-cursor" aria-hidden="true">_</span><span class="brand-bracket" aria-hidden="true">]</span>
+    </a>
+
+    <button type="button" class="nav-toggle" data-action="toggle-nav"
+            aria-expanded="false" aria-controls="primary-nav" aria-label="{{ t.menu_open }}">
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+      <span class="nav-toggle-bar" aria-hidden="true"></span>
+    </button>
+
+    <nav id="primary-nav" class="nav" aria-label="{{ t.main_nav }}">
+      <ul class="nav-list">
+        {% for item in nav %}
+        <li class="nav-item">
+          <a class="nav-link{% if item.key == page.section %} is-current{% endif %}"
+             href="{{ item.url }}"{% if item.key == page.section %} aria-current="page"{% endif %}>
+            <span class="nav-slash" aria-hidden="true">/</span>{{ item.label }}
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+
+      <div class="nav-tools">
+        <button type="button" class="tool-btn" data-action="open-palette"
+                aria-label="{{ t.palette_open }}" title="{{ t.palette_open }} (Ctrl+K)">
+          <span class="tool-icon" aria-hidden="true">⌕</span>
+          <span class="tool-key" aria-hidden="true">^K</span>
+        </button>
+
+        <button type="button" class="tool-btn" data-action="open-terminal"
+                aria-label="{{ t.terminal_open }}" title="{{ t.terminal_open }} (`)">
+          <span class="tool-icon" aria-hidden="true">&gt;_</span>
+        </button>
+
+        <button type="button" class="tool-btn" data-action="cycle-theme"
+                aria-label="{{ t.theme_switch }}" title="{{ t.theme_switch }}">
+          <span class="tool-icon theme-dot" aria-hidden="true"></span>
+        </button>
+
+        <ul class="lang-switch" aria-label="{{ t.lang_switch }}">
+          {% for entry in page.lang_links %}
+          <li>
+            <a class="lang-link{% if entry.current %} is-current{% endif %}"
+               href="{{ entry.url }}" hreflang="{{ entry.code }}" lang="{{ entry.code }}"
+               {% if entry.current %}aria-current="true"{% endif %}>{{ entry.code | upper }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </nav>
+
+  </div>
+  <div class="header-rule" aria-hidden="true"></div>
+</header>

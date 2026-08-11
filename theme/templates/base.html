@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="{{ lang }}" data-theme="{{ default_theme }}" data-section="{{ page.section }}" class="no-js">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta http-equiv="Content-Security-Policy" content="{{ csp }}" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#05070a" />
+
+<title>{{ page.full_title }}</title>
+<meta name="description" content="{{ page.description | truncate:300 }}" />
+<meta name="author" content="{{ site.author }}" />
+<meta name="generator" content="czrxplo1t-ssg" />
+{% if page.noindex %}<meta name="robots" content="noindex, follow" />{% else %}<meta name="robots" content="index, follow, max-image-preview:large" />{% endif %}
+<link rel="canonical" href="{{ page.canonical }}" />
+{% for entry in page.lang_links %}
+<link rel="alternate" hreflang="{{ entry.code }}" href="{{ entry.url | absurl }}" />
+{% endfor %}
+<link rel="alternate" hreflang="x-default" href="{{ page.default_alternate | absurl }}" />
+
+<meta property="og:site_name" content="{{ site.title }}" />
+<meta property="og:type" content="{{ page.og_type }}" />
+<meta property="og:title" content="{{ page.title }}" />
+<meta property="og:description" content="{{ page.description | truncate:300 }}" />
+<meta property="og:url" content="{{ page.canonical }}" />
+<meta property="og:locale" content="{{ page.locale }}" />
+{% if page.image %}<meta property="og:image" content="{{ page.image }}" />
+<meta property="og:image:alt" content="{{ page.title }}" />{% endif %}
+<meta name="twitter:card" content="{% if page.image %}summary_large_image{% else %}summary{% endif %}" />
+<meta name="twitter:title" content="{{ page.title }}" />
+<meta name="twitter:description" content="{{ page.description | truncate:200 }}" />
+{% if page.image %}<meta name="twitter:image" content="{{ page.image }}" />{% endif %}
+
+<link rel="stylesheet" href="{{ '/static/css/main.css' | asset }}" />
+
+<link rel="icon" href="{{ '/static/img/favicon.svg' | asset }}" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="{{ '/static/img/icon-192.png' | asset }}" />
+<link rel="manifest" href="/site.webmanifest" />
+<link rel="alternate" type="application/rss+xml" title="{{ site.title }} — RSS" href="{{ page.feed_url }}" />
+<link rel="alternate" type="application/atom+xml" title="{{ site.title }} — Atom" href="{{ page.atom_url }}" />
+
+{% block head_extra %}{% endblock %}
+
+<script src="{{ '/static/js/theme-boot.js' | asset }}"></script>
+<script type="module" src="{{ '/static/js/main.js' | asset }}"></script>
+</head>
+
+<body class="page page-{{ page.section | default:'default' }}">
+
+<a class="skip-link" href="#main">{{ t.skip_to_content }}</a>
+
+<div class="fx-layer" aria-hidden="true">
+  <canvas class="fx-matrix" id="matrix" data-density="0.7"></canvas>
+  <div class="fx-scanlines"></div>
+  <div class="fx-vignette"></div>
+</div>
+
+{% include "header.html" %}
+
+<main id="main" class="main" tabindex="-1">
+{% block content %}{% endblock %}
+</main>
+
+{% include "footer.html" %}
+{% include "palette.html" %}
+{% include "terminal.html" %}
+
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script type="application/json" id="site-data">{{ page.client_data | json }}</script>
+{% block body_extra %}{% endblock %}
+</body>
+</html>

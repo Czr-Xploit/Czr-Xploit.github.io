@@ -1,0 +1,60 @@
+{
+  "title": "CzrXplo1t",
+  "handle": "CzrXplo1t",
+  "author": "CzrXplo1t",
+  "base_url": "https://CzrXplo1t.github.io",
+
+  "tagline": {
+    "es": "investigación ofensiva, ingeniería inversa y notas de laboratorio",
+    "en": "offensive research, reverse engineering and lab notes"
+  },
+  "description": {
+    "es": "Investigación propia sobre seguridad ofensiva: análisis de vulnerabilidades, ingeniería inversa, writeups de laboratorio y herramientas. Sin humo y sin rastreadores.",
+    "en": "Original offensive-security research: vulnerability analysis, reverse engineering, lab writeups and tooling. No fluff, no trackers."
+  },
+
+  "default_language": "es",
+  "languages": [
+    {
+      "code": "es",
+      "name": "Spanish",
+      "native_name": "Español",
+      "locale": "es-ES",
+      "prefix": ""
+    },
+    {
+      "code": "en",
+      "name": "English",
+      "native_name": "English",
+      "locale": "en-US",
+      "prefix": "en"
+    }
+  ],
+
+  "default_theme": "phosphor",
+  "themes": ["phosphor", "amber", "ice", "redteam"],
+
+  "posts_per_page": 12,
+  "excerpt_length": 240,
+  "words_per_minute": 220,
+  "feed_items": 30,
+
+  "email": "czrxplo1t@proton.me",
+  "//pgp": "Deja pgp_key_path vacío hasta que subas la clave real a theme/static/pgp/. Si apunta a un fichero inexistente, build.py --check lo marca como enlace roto y el pie de página muestra un enlace muerto.",
+  "pgp_fingerprint": "",
+  "pgp_key_path": "",
+
+  "social": [
+    { "label": "GitHub", "url": "https://github.com/CzrXplo1t", "handle": "@CzrXplo1t" },
+    { "label": "RSS", "url": "/feed.xml", "handle": "feed.xml" }
+  ],
+
+  "budgets": {
+    "js_gzip_total": 61440,
+    "css_gzip_total": 46080,
+    "html_gzip_page": 30720,
+    "media_file_max": 2097152,
+    "media_total_max": 26214400,
+    "font_total": 225280
+  }
+}

@@ -1,0 +1,856 @@
+/* ==========================================================================
+   content.css — article prose: headings, lists, tables, code, callouts,
+   terminal blocks, GIF figures, footnotes, timelines, spoilers
+   ========================================================================== */
+
+@layer content {
+
+  /* ======================================================================
+     Prose shell and rhythm
+     ======================================================================
+     Running copy switches to the sans stack (see the justification in
+     tokens.css).  Everything structural — headings, code, chrome, tables of
+     data — stays monospace, so the page still reads as a terminal while a
+     6000-word body stays comfortable. */
+
+  .prose {
+    font-size: var(--fs-base);
+    line-height: var(--lh-body);
+    color: var(--text);
+  }
+
+  .prose p,
+  .prose li,
+  .prose dd,
+  .prose blockquote,
+  .prose figcaption,
+  .prose .callout-body,
+  .footnote-item,
+  .timeline-text {
+    font-family: var(--font-prose);
+  }
+
+  /* One rhythm rule instead of per-element margins: any sibling pair in the
+     flow gets the same gap, and the exceptions below tighten it. */
+  .prose > * + * {
+    margin-top: var(--sp-5);
+  }
+
+  .prose > p + p {
+    margin-top: var(--sp-4);
+  }
+
+  .prose > h2,
+  .prose > h3,
+  .prose > h4 {
+    margin-top: var(--sp-8);
+  }
+
+  .prose > h2 + *,
+  .prose > h3 + *,
+  .prose > h4 + * {
+    margin-top: var(--sp-3);
+  }
+
+  .prose-compact {
+    font-size: var(--fs-sm);
+  }
+
+  .prose-compact > * + * {
+    margin-top: var(--sp-3);
+  }
+
+  /* ======================================================================
+     Headings and anchors
+     ====================================================================== */
+
+  .heading {
+    position: relative;
+    /* Sticky header clearance for #fragment jumps and :target. */
+    scroll-margin-top: 5.5rem;
+    text-wrap: balance;
+  }
+
+  .heading-2 {
+    font-size: var(--fs-xl);
+    padding-bottom: var(--sp-2);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .heading-3 {
+    font-size: var(--fs-lg);
+  }
+
+  .heading-4 {
+    font-size: var(--fs-md);
+    color: var(--text);
+  }
+
+  .heading-5,
+  .heading-6 {
+    font-size: var(--fs-base);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+  }
+
+  .heading-anchor {
+    margin-left: 0.4em;
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 400;
+    opacity: 0.55;
+  }
+
+  /* On touch there is no hover, so the handle stays visible at low emphasis
+     rather than being unreachable. */
+  @media (hover: hover) {
+    .heading-anchor {
+      opacity: 0;
+      transition: opacity var(--dur-1) var(--ease);
+    }
+
+    .heading:hover .heading-anchor,
+    .heading-anchor:focus-visible {
+      opacity: 1;
+    }
+  }
+
+  .heading:target {
+    /* A tinted rail rather than a background flash: no animation, no reflow. */
+    box-shadow: -0.75rem 0 0 -0.55rem var(--accent);
+  }
+
+  /* ======================================================================
+     Inline marks
+     ====================================================================== */
+
+  .prose a {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
+  }
+
+  .prose a.ext::after {
+    content: "↗";
+    display: inline-block;
+    margin-left: 0.15em;
+    font-size: 0.85em;
+    vertical-align: baseline;
+    text-decoration: none;
+    color: var(--text-muted);
+  }
+
+  mark {
+    background: var(--selection-bg);
+    color: var(--text-strong);
+    padding-inline: 0.15em;
+    border-radius: 2px;
+  }
+
+  del {
+    color: var(--text-muted);
+    text-decoration-color: var(--c-danger);
+  }
+
+  ins {
+    text-decoration-color: var(--c-success);
+  }
+
+  sup, sub {
+    line-height: 0;
+    font-size: 0.72em;
+  }
+
+  .kbd-combo {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    white-space: nowrap;
+  }
+
+  .kbd-sep {
+    color: var(--text-muted);
+    font-size: 0.8em;
+  }
+
+  /* ======================================================================
+     Lists
+     ======================================================================
+     base.css strips markers from every classed list; markdown lists are
+     classed, so the markers are restored here on purpose. */
+
+  ul.md-list,
+  ol.md-list {
+    padding-left: 1.5em;
+  }
+
+  ul.md-list { list-style: disc; }
+  ul.md-list ul.md-list { list-style: circle; }
+  ol.md-list { list-style: decimal; }
+  ol.md-list ol.md-list { list-style: lower-alpha; }
+
+  .md-item {
+    margin-top: var(--sp-2);
+  }
+
+  .md-list.is-loose > .md-item {
+    margin-top: var(--sp-3);
+  }
+
+  .md-item::marker {
+    color: var(--accent);
+  }
+
+  .md-list .md-list,
+  .md-list .task-list {
+    margin-top: var(--sp-2);
+  }
+
+  ul.task-list,
+  ol.task-list {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  .task-item {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    margin-top: var(--sp-2);
+  }
+
+  .task-box {
+    flex: none;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -0.05em;
+  }
+
+  .task-item.is-done {
+    color: var(--text-muted);
+  }
+
+  .task-item.is-done .task-box {
+    color: var(--c-success);
+  }
+
+  /* ======================================================================
+     Quotes and rules
+     ====================================================================== */
+
+  .prose blockquote {
+    padding: var(--sp-3) var(--sp-5);
+    border-left: 3px solid var(--border-ui);
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .prose blockquote p + p {
+    margin-top: var(--sp-3);
+  }
+
+  .rule {
+    border: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-ui), transparent);
+    margin-block: var(--sp-7);
+  }
+
+  /* ======================================================================
+     Tables
+     ====================================================================== */
+
+  .table-wrap {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+  }
+
+  .md-table {
+    width: 100%;
+    font-size: var(--fs-sm);
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .md-table th,
+  .md-table td {
+    padding: var(--sp-3) var(--sp-4);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .md-table thead th {
+    background: var(--surface-2);
+    color: var(--text-strong);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    white-space: nowrap;
+  }
+
+  .md-table tbody tr:last-child th,
+  .md-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  @media (hover: hover) {
+    .md-table tbody tr:hover {
+      background: var(--surface-2);
+    }
+  }
+
+  .ta-left { text-align: left; }
+  .ta-center { text-align: center; }
+  .ta-right { text-align: right; }
+
+  /* ======================================================================
+     Code blocks
+     ====================================================================== */
+
+  .code-block,
+  .terminal-block {
+    margin: 0;
+    background: var(--code-bg);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+  }
+
+  .code-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--surface-2);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .code-lang {
+    font-size: var(--fs-3xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .code-copy {
+    flex: none;
+    padding: var(--sp-1) var(--sp-2);
+    font-size: var(--fs-3xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-xs);
+    background: var(--surface);
+  }
+
+  @media (hover: hover) {
+    .code-copy:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+
+  /* Reserving the width stops the head from reflowing when the script swaps
+     the label to its confirmation state. */
+  .code-copy-label {
+    display: inline-block;
+    min-width: 4ch;
+    text-align: center;
+  }
+
+  .code-copy.is-done {
+    color: var(--c-success);
+    border-color: var(--c-success);
+  }
+
+  pre.code {
+    margin: 0;
+    padding: var(--sp-4) 0;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-code);
+    color: var(--text);
+    background: var(--code-bg);
+    /* A focusable scroll container needs a visible ring; the figure clips at
+       its own radius so the ring is drawn inside. */
+    scrollbar-gutter: stable;
+  }
+
+  pre.code:focus-visible {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: -2px;
+  }
+
+  /* ----------------------------------------------------------------------
+     Per-line wrapping.
+     highlight.py emits one span.ln element per source line, separated by real
+     newlines.  If .code-lines kept `white-space: pre` those newlines would
+     become anonymous blocks between the line boxes and every listing would
+     double-space.  So the container collapses whitespace and each line
+     re-enables it — that is the whole trick, and it is why the two
+     declarations look contradictory.
+     `width: max-content; min-width: 100%` lets a highlighted line paint the
+     full gutter width while still overflowing for the horizontal scroll.
+     ---------------------------------------------------------------------- */
+  .code-lines {
+    display: block;
+    white-space: normal;
+  }
+
+  .ln {
+    display: block;
+    white-space: pre;
+    width: max-content;
+    min-width: 100%;
+    padding-inline: var(--sp-4);
+  }
+
+  .ln-hl {
+    background: color-mix(in srgb, var(--accent) 11%, transparent);
+    box-shadow: inset 2px 0 0 var(--accent);
+  }
+
+  /* Line numbers live in a counter-driven ::before, so select-all-and-copy
+     never picks them up: generated content is not part of the DOM text, and
+     user-select: none covers the browsers that would otherwise try.
+     Numbering always starts at 1 — the `start=` fence attribute is not
+     surfaced as a data attribute, so there is nothing to seed the counter
+     with. */
+  .code-lines.with-numbers {
+    counter-reset: ln;
+  }
+
+  .code-lines.with-numbers .ln {
+    counter-increment: ln;
+  }
+
+  .code-lines.with-numbers .ln::before {
+    content: counter(ln);
+    display: inline-block;
+    width: 2.5em;
+    margin-right: var(--sp-4);
+    text-align: right;
+    color: var(--tok-com);
+    opacity: 0.75;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  /* --- Syntax tokens ---------------------------------------------------- */
+
+  .tok-com { color: var(--tok-com); font-style: italic; }
+  .tok-kw { color: var(--tok-kw); font-weight: 700; }
+  .tok-str { color: var(--tok-str); }
+  .tok-num { color: var(--tok-num); }
+  .tok-fn { color: var(--tok-fn); }
+  .tok-bi { color: var(--tok-bi); }
+  .tok-var { color: var(--tok-var); }
+  .tok-op { color: var(--tok-op); }
+  .tok-pun { color: var(--tok-pun); }
+  .tok-tag { color: var(--tok-tag); }
+  .tok-atr { color: var(--tok-atr); }
+  .tok-cst { color: var(--tok-cst); }
+  .tok-met { color: var(--tok-met); }
+  .tok-err { color: var(--tok-err); }
+  .tok-ok { color: var(--tok-ok); }
+  .tok-pmt { color: var(--tok-pmt); font-weight: 700; }
+  .tok-out { color: var(--tok-out); }
+
+  /* Inline code, as opposed to a block. */
+  .prose :not(pre) > code {
+    padding: 0.12em 0.35em;
+    background: var(--surface-2);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-xs);
+    color: var(--text-strong);
+    word-break: break-word;
+  }
+
+  .prose a > code {
+    color: inherit;
+  }
+
+  /* ======================================================================
+     Terminal block (::: terminal, and the 404 decoration)
+     ====================================================================== */
+
+  pre.terminal {
+    color: var(--tok-out);
+  }
+
+  .terminal-block .terminal-chrome {
+    border-radius: 0;
+  }
+
+  /* ======================================================================
+     Callouts
+     ======================================================================
+     Each variant sets --cl to its semantic hue; everything else reads that
+     one property.  The flat surface is declared first so a browser without
+     color-mix() gets a solid panel rather than a transparent one. */
+
+  .callout {
+    --cl: var(--c-note);
+    display: block;
+    padding: var(--sp-4) var(--sp-5);
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-left: 3px solid var(--cl);
+    border-radius: var(--r-sm);
+  }
+
+  @supports (background: color-mix(in srgb, red 10%, blue)) {
+    .callout {
+      background: color-mix(in srgb, var(--cl) 8%, var(--surface));
+      border-color: color-mix(in srgb, var(--cl) 28%, var(--border));
+      border-left-color: var(--cl);
+    }
+  }
+
+  .callout-title {
+    display: flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    color: var(--cl);
+    margin: 0;
+  }
+
+  .callout-icon {
+    flex: none;
+    font-weight: 700;
+    color: var(--cl);
+  }
+
+  .callout-body {
+    margin-top: var(--sp-3);
+    color: var(--text);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-body);
+  }
+
+  .callout-body > * + * {
+    margin-top: var(--sp-3);
+  }
+
+  .callout-body > :first-child {
+    margin-top: 0;
+  }
+
+  .callout-note { --cl: var(--c-note); }
+  .callout-tip { --cl: var(--c-tip); }
+  .callout-warning { --cl: var(--c-warning); }
+  .callout-danger { --cl: var(--c-danger); }
+  .callout-success { --cl: var(--c-success); }
+  .callout-info { --cl: var(--c-info); }
+
+  .callout-quote {
+    --cl: var(--c-quote);
+    font-style: italic;
+  }
+
+  .callout-quote .callout-body {
+    color: var(--text-muted);
+  }
+
+  /* The <noscript> fallback on the search page uses .callout as a paragraph. */
+  p.callout {
+    font-family: var(--font-prose);
+    font-size: var(--fs-sm);
+  }
+
+  /* ======================================================================
+     Spoiler
+     ====================================================================== */
+
+  .spoiler {
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-sm);
+    overflow: hidden;
+  }
+
+  .spoiler > summary {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text);
+    background: var(--surface-2);
+  }
+
+  @media (hover: hover) {
+    .spoiler > summary:hover {
+      color: var(--accent);
+    }
+  }
+
+  /* The marker text is a literal [+] in the HTML, so it is zeroed out and
+     replaced by generated content that can respond to [open]. The element is
+     aria-hidden, so nothing is lost from the accessibility tree. */
+  .spoiler-mark {
+    font-size: 0;
+    color: var(--accent);
+  }
+
+  .spoiler-mark::before {
+    content: "[+]";
+    font-size: var(--fs-sm);
+    font-family: var(--font-mono);
+  }
+
+  .spoiler[open] .spoiler-mark::before {
+    content: "[-]";
+  }
+
+  .spoiler-body {
+    padding: var(--sp-4);
+  }
+
+  .spoiler-body > * + * {
+    margin-top: var(--sp-4);
+  }
+
+  /* ======================================================================
+     Timeline
+     ====================================================================== */
+
+  .timeline-wrap {
+    padding: var(--sp-4) 0;
+  }
+
+  .timeline-title {
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+    margin-bottom: var(--sp-4);
+  }
+
+  .timeline {
+    position: relative;
+    margin: 0;
+    padding-left: var(--sp-6);
+    list-style: none;
+    border-left: var(--hair) solid var(--border-ui);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-bottom: var(--sp-5);
+  }
+
+  .timeline-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline-item::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--sp-6) * -1);
+    top: 0.5em;
+    width: 9px;
+    height: 9px;
+    margin-left: -5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: var(--glow-sm);
+  }
+
+  .timeline-date {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--accent);
+  }
+
+  .timeline-text {
+    display: block;
+    margin-top: var(--sp-1);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-body);
+  }
+
+  /* ======================================================================
+     Figures and media
+     ====================================================================== */
+
+  .block-figure,
+  .img-figure {
+    margin: 0;
+  }
+
+  .content-img,
+  .img-figure img,
+  .block-figure img {
+    width: 100%;
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    background: var(--surface);
+  }
+
+  /* An inline .gif is an always-animating image with no play control, so it
+     is marked as such: the accent hairline is the only hint the reader gets
+     that this frame is moving on its own. */
+  .content-img.is-gif {
+    border-color: var(--border-ui);
+  }
+
+  figcaption,
+  .gif-caption {
+    margin-top: var(--sp-2);
+    font-size: var(--fs-xs);
+    line-height: 1.5;
+    color: var(--text-muted);
+    text-align: center;
+  }
+
+  .gif-figure {
+    margin: 0;
+  }
+
+  .gif-frame {
+    position: relative;
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    background: var(--surface-2);
+  }
+
+  .gif-media {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* The play control has to survive being placed over an unknown image, so
+     it carries its own opaque plate plus a light hairline: dark-on-dark and
+     light-on-light are both covered without knowing the poster. */
+  .gif-toggle {
+    position: absolute;
+    right: var(--sp-3);
+    bottom: var(--sp-3);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    min-height: 44px;
+    min-width: 44px;
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    color: #f4fff8;
+    background: rgb(4 6 8 / 82%);
+    border: var(--hair) solid var(--accent);
+    border-radius: var(--r-pill);
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 22%), 0 2px 10px rgb(0 0 0 / 55%);
+  }
+
+  .gif-toggle-icon {
+    color: var(--accent);
+    font-size: 0.9em;
+  }
+
+  @media (hover: hover) {
+    .gif-toggle:hover {
+      background: rgb(4 6 8 / 92%);
+    }
+  }
+
+  /* Playing state: the control turns into a pause affordance, set by the
+     gif script. */
+  .gif-figure.is-playing .gif-toggle-icon,
+  .gif-figure.is-autoplay .gif-toggle-icon {
+    color: var(--c-warning);
+  }
+
+  .gif-figure.is-playing .gif-toggle-text::after {
+    content: " ■";
+  }
+
+  /* ======================================================================
+     References and footnotes
+     ====================================================================== */
+
+  .references,
+  .footnotes {
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-5);
+    border-top: var(--hair) solid var(--border);
+  }
+
+  .references-title,
+  .footnotes-title {
+    font-size: var(--fs-md);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+    margin-bottom: var(--sp-4);
+  }
+
+  .references .md-list {
+    font-size: var(--fs-sm);
+  }
+
+  .footnote-ref a {
+    padding-inline: 0.15em;
+    font-family: var(--font-mono);
+    font-size: 0.95em;
+    text-decoration: none;
+    color: var(--accent);
+  }
+
+  .footnote-ref a:target,
+  .footnote-item:target {
+    background: var(--selection-bg);
+  }
+
+  .footnote-list {
+    padding-left: 1.6em;
+    list-style: decimal;
+    font-size: var(--fs-sm);
+  }
+
+  .footnote-item {
+    margin-top: var(--sp-3);
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  .footnote-item::marker {
+    color: var(--accent);
+    font-family: var(--font-mono);
+  }
+
+  .footnote-item p {
+    display: inline;
+  }
+
+  .footnote-backs {
+    margin-left: var(--sp-2);
+  }
+
+  .footnote-back {
+    text-decoration: none;
+    color: var(--accent);
+    padding-inline: 0.15em;
+  }
+}

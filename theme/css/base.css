@@ -1,0 +1,339 @@
+/* ==========================================================================
+   base.css — reset, element defaults, typography primitives, a11y utilities
+   ========================================================================== */
+
+@layer base {
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :where(body, h1, h2, h3, h4, h5, h6, p, figure, blockquote, dl, dd, ol, ul, pre, fieldset) {
+    margin: 0;
+  }
+
+  :where(ul, ol)[class] {
+    padding-left: 0;
+    list-style: none;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -moz-tab-size: 4;
+    tab-size: 4;
+    /* Anchors land below the sticky header instead of under it. */
+    scroll-padding-top: 5.5rem;
+    background-color: var(--bg);
+    /* Clamped on the root, not on <body>: overflow on <body> propagates to
+       the viewport only while <html> is `visible`, and relying on that
+       propagation is what breaks `position: sticky` headers. */
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html:focus-within {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    min-height: 100svh;
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: var(--fs-base);
+    line-height: var(--lh-ui);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Notched phones: the fixed chrome reads these too, but the body pad is
+       what keeps footer text off the home indicator. */
+    padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  /* Modal-open lock. Set by the palette/terminal scripts. */
+  body.is-locked {
+    overflow: hidden;
+  }
+
+  /* --- Headings ------------------------------------------------------- */
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-tight);
+    color: var(--text-strong);
+    text-wrap: balance;
+  }
+
+  h1 { font-size: var(--fs-2xl); }
+  h2 { font-size: var(--fs-xl); }
+  h3 { font-size: var(--fs-lg); }
+  h4 { font-size: var(--fs-md); }
+  h5, h6 { font-size: var(--fs-base); }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* --- Links ---------------------------------------------------------- */
+
+  a {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+    text-decoration-color: color-mix(in srgb, var(--link) 45%, transparent);
+    transition: color var(--dur-1) var(--ease), text-decoration-color var(--dur-1) var(--ease);
+  }
+
+  @media (hover: hover) {
+    a:hover {
+      color: var(--text-strong);
+      text-decoration-color: currentColor;
+    }
+  }
+
+  a:visited {
+    color: var(--link-visited);
+  }
+
+  /* --- Media ---------------------------------------------------------- */
+
+  img, picture, video, canvas, svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  img, video {
+    height: auto;
+  }
+
+  /* --- Forms ---------------------------------------------------------- */
+
+  input, button, textarea, select {
+    font: inherit;
+    color: inherit;
+    letter-spacing: inherit;
+  }
+
+  button {
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+
+  input[type="search"] {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input[type="search"]::-webkit-search-decoration,
+  input[type="search"]::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+
+  ::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  /* --- Code ----------------------------------------------------------- */
+
+  code, kbd, samp, pre, var {
+    font-family: var(--font-mono);
+    font-size: 0.94em;
+    font-variant-ligatures: none;
+  }
+
+  pre {
+    overflow: auto;
+  }
+
+  /* --- Tables --------------------------------------------------------- */
+
+  table {
+    border-collapse: collapse;
+    border-spacing: 0;
+  }
+
+  /* --- Misc elements -------------------------------------------------- */
+
+  hr {
+    border: 0;
+    border-top: var(--hair) solid var(--border);
+  }
+
+  small {
+    font-size: var(--fs-xs);
+  }
+
+  strong, b {
+    font-weight: 700;
+    color: var(--text-strong);
+  }
+
+  abbr[title] {
+    text-decoration: underline dotted;
+    text-underline-offset: 0.2em;
+    cursor: help;
+  }
+
+  ::selection {
+    background: var(--selection-bg);
+    color: var(--selection-fg);
+    text-shadow: none;
+  }
+
+  ::marker {
+    color: var(--accent);
+  }
+
+  summary {
+    cursor: pointer;
+  }
+
+  details > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  /* Firefox draws its own triangle; the components layer supplies [+]/[-]. */
+  summary {
+    list-style: none;
+  }
+
+  summary::marker {
+    content: "";
+  }
+
+  /* --- Scrollbars ------------------------------------------------------
+     Thin, theme-tinted, and only where the browser gives us the hooks. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-ui) transparent;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--border-ui);
+    border-radius: var(--r-pill);
+    border: 2px solid var(--bg);
+  }
+
+  /* --- Focus -----------------------------------------------------------
+     One ring, everywhere, on the same token.  `:focus-visible` only, so a
+     mouse click never paints it, but keyboard and programmatic focus always
+     do.  Nothing in this bundle sets `outline: none` without replacing it
+     with a ring of at least equal weight. */
+  :focus-visible {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: var(--focus-offset);
+    border-radius: var(--r-xs);
+  }
+
+  /* The main element carries tabindex -1 and receives focus after a
+     skip-link jump; a ring around the whole page is noise, so it gets a
+     scroll target instead. */
+  .main:focus,
+  .main:focus-visible {
+    outline: none;
+  }
+
+  /* --- Screen-reader-only ---------------------------------------------
+     clip-path plus a 1px box: `display: none` and `visibility: hidden`
+     would remove it from the accessibility tree, which defeats the point. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* --- Skip link ------------------------------------------------------- */
+
+  .skip-link {
+    position: fixed;
+    top: var(--sp-2);
+    left: var(--sp-2);
+    z-index: var(--z-skip);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-2);
+    color: var(--text-strong);
+    border: 2px solid var(--focus);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    text-decoration: none;
+    letter-spacing: var(--tracking-wide);
+    /* Off-canvas rather than hidden, so it keeps its place in the tab order. */
+    transform: translateY(-150%);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+
+  .skip-link:focus-visible,
+  .skip-link:focus {
+    transform: translateY(0);
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: var(--focus-offset);
+  }
+
+  /* --- Coarse pointers -------------------------------------------------
+       44x44 CSS px minimum on anything tappable.  Applied by role rather
+       than by class so a component added later inherits the floor. */
+  @media (pointer: coarse) {
+    :where(button, a[href], input, select, summary, [role="button"], [role="option"], [tabindex]:not([tabindex="-1"])) {
+      min-height: 44px;
+    }
+
+    :where(button, [role="button"]) {
+      min-width: 44px;
+    }
+
+    /* Inline links inside running prose are exempt: a 44px tall <a> inside a
+       paragraph would wreck the line box, and WCAG 2.5.8 exempts inline
+       targets in a sentence for exactly this reason. */
+    :where(.prose, p, li, dd, figcaption, .footnote-item) a[href] {
+      min-height: 0;
+    }
+  }
+
+  /* --- no-js ------------------------------------------------------------
+     theme-boot.js strips `.no-js` from <html> on first paint.  Affordances
+     that do nothing without script are hidden rather than left as dead
+     controls. */
+  .no-js .code-copy,
+  .no-js .gif-toggle,
+  .no-js .nav-toggle,
+  .no-js .fx-layer,
+  .no-js .term,
+  .no-js .palette,
+  .no-js .progress,
+  .no-js [data-action="open-palette"],
+  .no-js [data-action="open-terminal"] {
+    display: none;
+  }
+
+  .no-js .nav {
+    display: block;
+  }
+}

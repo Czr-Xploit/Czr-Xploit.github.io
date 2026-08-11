@@ -1,0 +1,1753 @@
+/* ==========================================================================
+   components.css — header, nav, cards, chips, tags, buttons, palette,
+   terminal, footer, pagination, filters, toasts, forms
+   ==========================================================================
+   No backdrop-filter anywhere in this bundle.  The two places it would be
+   tempting (the sticky header strip and the palette overlay) both span the
+   viewport width, and a blurred layer that size is the single most reliable
+   way to lose a frame on a mid-range phone.  Opaque surfaces instead.
+   ========================================================================== */
+
+@layer components {
+
+  /* ======================================================================
+     Prompt marks and shared text bits
+     ====================================================================== */
+
+  .prompt {
+    color: var(--accent);
+    font-weight: 700;
+    text-shadow: var(--glow-text);
+  }
+
+  .breadcrumb {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    word-break: break-word;
+  }
+
+  .meta-label {
+    color: var(--text-muted);
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+  }
+
+  .link-arrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    text-decoration: none;
+    border-bottom: var(--hair) solid transparent;
+  }
+
+  .link-arrow span {
+    transition: transform var(--dur-2) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .link-arrow:hover {
+      border-bottom-color: currentColor;
+    }
+
+    .link-arrow:hover span {
+      transform: translateX(3px);
+    }
+  }
+
+  /* ======================================================================
+     Header
+     ====================================================================== */
+
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-header);
+    background: var(--bg);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    min-height: 3.5rem;
+    padding-block: var(--sp-2);
+  }
+
+  .header-rule {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--border-ui) 18%, var(--accent-dim) 50%, var(--border-ui) 82%, transparent);
+    opacity: 0.85;
+  }
+
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: var(--fs-md);
+    letter-spacing: var(--tracking-tight);
+    text-decoration: none;
+    color: var(--text-strong);
+    margin-right: auto;
+  }
+
+  .brand-bracket {
+    color: var(--accent);
+    opacity: 0.75;
+  }
+
+  .brand-name {
+    padding-inline: 0.15em;
+  }
+
+  .brand-cursor {
+    color: var(--accent);
+    text-shadow: var(--glow-text);
+  }
+
+  /* ======================================================================
+     Nav
+     ====================================================================== */
+
+  .nav-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 44px;
+    height: 44px;
+    padding: 0 10px;
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+  }
+
+  .nav-toggle-bar {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--text);
+    transform-origin: center;
+    transition: transform var(--dur-2) var(--ease), opacity var(--dur-1) var(--ease);
+  }
+
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(1) {
+    transform: translateY(6px) rotate(45deg);
+  }
+
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(2) {
+    opacity: 0;
+  }
+
+  .nav-toggle[aria-expanded="true"] .nav-toggle-bar:nth-child(3) {
+    transform: translateY(-6px) rotate(-45deg);
+  }
+
+  /* Mobile: the nav is a panel that drops out of the header bar. */
+  .nav {
+    display: none;
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    padding: var(--sp-4) max(var(--gutter), env(safe-area-inset-left, 0px));
+    background: var(--bg);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .nav.is-open,
+  .nav-toggle[aria-expanded="true"] + .nav {
+    display: block;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+    margin: 0;
+  }
+
+  .nav-item {
+    min-width: 0;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding: var(--sp-3) var(--sp-2);
+    font-size: var(--fs-sm);
+    letter-spacing: var(--tracking-wide);
+    text-decoration: none;
+    color: var(--text);
+    border-radius: var(--r-sm);
+    border-left: 2px solid transparent;
+  }
+
+  .nav-slash {
+    color: var(--text-muted);
+  }
+
+  .nav-link.is-current,
+  .nav-link[aria-current="page"] {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--surface);
+  }
+
+  .nav-link.is-current .nav-slash {
+    color: var(--accent);
+  }
+
+  @media (hover: hover) {
+    .nav-link:hover {
+      background: var(--surface);
+      color: var(--text-strong);
+    }
+
+    .nav-link:hover .nav-slash {
+      color: var(--accent);
+    }
+  }
+
+  .nav-tools {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-4);
+    border-top: var(--hair) solid var(--border-soft);
+  }
+
+  .tool-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-width: 44px;
+    min-height: 44px;
+    padding-inline: var(--sp-3);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-sm);
+    transition: border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+
+  .tool-icon {
+    font-size: 1.05em;
+    line-height: 1;
+  }
+
+  .tool-key {
+    font-size: var(--fs-3xs);
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  @media (hover: hover) {
+    .tool-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .tool-btn:hover .tool-key {
+      color: var(--text);
+    }
+  }
+
+  .theme-dot {
+    width: 0.85em;
+    height: 0.85em;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: var(--glow-sm);
+  }
+
+  .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    margin: 0;
+    margin-left: auto;
+  }
+
+  .lang-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    padding-inline: var(--sp-2);
+    font-size: var(--fs-2xs);
+    font-weight: 700;
+    letter-spacing: var(--tracking-caps);
+    text-decoration: none;
+    color: var(--text-muted);
+    border: var(--hair) solid transparent;
+    border-radius: var(--r-sm);
+  }
+
+  .lang-link.is-current,
+  .lang-link[aria-current] {
+    color: var(--accent);
+    border-color: var(--border-ui);
+  }
+
+  @media (hover: hover) {
+    .lang-link:hover {
+      color: var(--text-strong);
+      border-color: var(--border-ui);
+    }
+  }
+
+  @media (min-width: 60rem) {
+    .nav-toggle {
+      display: none;
+    }
+
+    .nav {
+      display: flex;
+      position: static;
+      align-items: center;
+      gap: var(--sp-5);
+      padding: 0;
+      border: 0;
+      background: none;
+    }
+
+    .nav-list {
+      flex-direction: row;
+      gap: var(--sp-1);
+    }
+
+    .nav-link {
+      border-left: 0;
+      border-bottom: 2px solid transparent;
+      border-radius: 0;
+      padding: var(--sp-2) var(--sp-3);
+    }
+
+    .nav-link.is-current,
+    .nav-link[aria-current="page"] {
+      background: none;
+      border-bottom-color: var(--accent);
+    }
+
+    .nav-tools {
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
+
+    .lang-switch {
+      margin-left: var(--sp-2);
+    }
+  }
+
+  /* ======================================================================
+     Buttons
+     ====================================================================== */
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-2);
+    min-height: 2.75rem;
+    padding: var(--sp-3) var(--sp-5);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-sm);
+    background: var(--surface);
+    color: var(--text);
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    letter-spacing: var(--tracking-wide);
+    text-decoration: none;
+    text-align: center;
+    transition: transform var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease), color var(--dur-1) var(--ease);
+  }
+
+  .btn > span[aria-hidden] {
+    color: var(--accent);
+  }
+
+  .btn-primary {
+    border-color: var(--accent);
+    color: var(--text-strong);
+    background: var(--surface-2);
+    box-shadow: var(--glow-sm);
+  }
+
+  .btn-ghost {
+    background: none;
+    border-style: dashed;
+  }
+
+  @media (hover: hover) {
+    .btn:hover {
+      color: var(--text-strong);
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn:active {
+    transform: translateY(0);
+  }
+
+  .btn-mini {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-1) var(--sp-2);
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-xs);
+    background: none;
+    text-decoration: none;
+  }
+
+  @media (hover: hover) {
+    .btn-mini:hover {
+      color: var(--accent);
+      border-color: var(--border-ui);
+    }
+  }
+
+  /* ======================================================================
+     Chips, tags, badges
+     ====================================================================== */
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: 0.2em 0.6em;
+    font-size: var(--fs-2xs);
+    line-height: 1.5;
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    background: var(--surface-2);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-xs);
+    white-space: nowrap;
+  }
+
+  .chip-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0;
+  }
+
+  .chip-cve {
+    color: var(--c-danger);
+    border-color: color-mix(in srgb, var(--c-danger) 45%, transparent);
+    font-weight: 700;
+  }
+
+  .chip-disclosure,
+  .chip-license,
+  .chip-lang,
+  .chip-platform,
+  .chip-os {
+    color: var(--text);
+  }
+
+  .chip-lang {
+    color: var(--accent-2);
+  }
+
+  /* Difficulty and severity are colour-coded by data attribute.  Both the
+     English and the Spanish spellings are listed because the value is the
+     raw front-matter string written by the author, lowercased and nothing
+     more. */
+  .chip-difficulty,
+  .chip-severity {
+    font-weight: 700;
+    color: var(--text);
+    border-color: var(--border-ui);
+  }
+
+  .chip-difficulty[data-level="easy"],
+  .chip-difficulty[data-level="facil"],
+  .chip-difficulty[data-level="fácil"],
+  .chip-severity[data-level="low"],
+  .chip-severity[data-level="baja"],
+  .chip-severity[data-level="bajo"] {
+    color: var(--c-easy);
+    border-color: color-mix(in srgb, var(--c-easy) 42%, transparent);
+  }
+
+  .chip-difficulty[data-level="medium"],
+  .chip-difficulty[data-level="media"],
+  .chip-difficulty[data-level="medio"],
+  .chip-severity[data-level="medium"],
+  .chip-severity[data-level="media"],
+  .chip-severity[data-level="medio"] {
+    color: var(--c-medium);
+    border-color: color-mix(in srgb, var(--c-medium) 42%, transparent);
+  }
+
+  .chip-difficulty[data-level="hard"],
+  .chip-difficulty[data-level="dificil"],
+  .chip-difficulty[data-level="difícil"],
+  .chip-severity[data-level="high"],
+  .chip-severity[data-level="alta"],
+  .chip-severity[data-level="alto"] {
+    color: var(--c-hard);
+    border-color: color-mix(in srgb, var(--c-hard) 42%, transparent);
+  }
+
+  .chip-difficulty[data-level="insane"],
+  .chip-difficulty[data-level="insana"],
+  .chip-difficulty[data-level="demente"] {
+    color: var(--c-insane);
+    border-color: color-mix(in srgb, var(--c-insane) 42%, transparent);
+  }
+
+  .chip-severity[data-level="critical"],
+  .chip-severity[data-level="critica"],
+  .chip-severity[data-level="crítica"],
+  .chip-severity[data-level="critico"],
+  .chip-severity[data-level="crítico"] {
+    color: var(--c-critical);
+    border-color: color-mix(in srgb, var(--c-critical) 55%, transparent);
+    box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-critical) 18%, transparent);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: var(--fs-2xs);
+    letter-spacing: var(--tracking-wide);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  a.tag,
+  .tag-link {
+    text-decoration: none;
+    padding: 0.2em 0.55em;
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-xs);
+    color: var(--text-muted);
+  }
+
+  @media (hover: hover) {
+    .tag-link:hover {
+      color: var(--accent);
+      border-color: var(--border-ui);
+      background: var(--surface);
+    }
+  }
+
+  .tag-count {
+    display: inline-block;
+    margin-left: 0.45em;
+    padding-inline: 0.35em;
+    font-size: 0.9em;
+    color: var(--text);
+    background: var(--surface-2);
+    border-radius: var(--r-xs);
+  }
+
+  .tag-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0;
+  }
+
+  .tag-cloud-large .tag-link {
+    font-size: var(--fs-sm);
+    padding: var(--sp-2) var(--sp-3);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.1em 0.45em;
+    font-size: var(--fs-3xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    border-radius: var(--r-xs);
+    border: var(--hair) solid currentColor;
+  }
+
+  .badge-draft {
+    color: var(--c-warning);
+  }
+
+  .badge-featured {
+    color: var(--accent);
+    border-color: transparent;
+    font-size: var(--fs-sm);
+    text-shadow: var(--glow-text);
+  }
+
+  /* ======================================================================
+     Cards (stretched-link pattern)
+     ====================================================================== */
+
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    overflow: hidden;
+    transition: border-color var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+  }
+
+  /* The overlay anchor covers the whole card.  Because it is inset: 0, its
+     own focus ring traces the card outline exactly — no :has() needed for
+     the ring itself.  :has() is used only to add the accent border, and its
+     absence degrades to ring-without-glow. */
+  .card-link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    border-radius: inherit;
+  }
+
+  .card-link:focus-visible {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: -3px;
+  }
+
+  .card:has(.card-link:focus-visible) {
+    border-color: var(--accent);
+  }
+
+  /* Real links inside the card must sit above the overlay or they become
+     unclickable — this is the failure mode of every stretched-link card. */
+  .card-tags,
+  .card-tags a,
+  .card-body a:not(.card-link),
+  .arsenal-name a,
+  .arsenal-meta a {
+    position: relative;
+    z-index: 2;
+  }
+
+  @media (hover: hover) {
+    .card:hover {
+      border-color: var(--border-ui);
+      transform: translateY(-2px);
+    }
+
+    .card:hover .card-title {
+      color: var(--accent);
+    }
+  }
+
+  .card-media {
+    aspect-ratio: 16 / 9;
+    background: var(--surface-2);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    padding: var(--sp-4);
+    flex: 1 1 auto;
+  }
+
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+  }
+
+  .card-kind {
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    font-weight: 700;
+  }
+
+  .card-kind[data-kind="writeup"] {
+    color: var(--accent-2);
+  }
+
+  .card-date {
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* A middot separator drawn in CSS keeps the markup free of decorative
+     characters that a screen reader would announce. */
+  .card-read::before {
+    content: "· ";
+    color: var(--border-ui);
+  }
+
+  .card-title {
+    font-size: var(--fs-md);
+    line-height: 1.3;
+    margin: 0;
+    transition: color var(--dur-1) var(--ease);
+  }
+
+  .card-summary {
+    font-family: var(--font-prose);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .card-writeup-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0;
+  }
+
+  .card-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0;
+    margin-top: auto;
+    padding-top: var(--sp-2);
+  }
+
+  /* Kind badge on the card body already names the type; the card variants
+     only shift the rail colour so a mixed grid is scannable at a glance. */
+  .card-post {
+    border-top: 2px solid var(--border);
+  }
+
+  .card-writeup {
+    border-top: 2px solid color-mix(in srgb, var(--accent-2) 55%, var(--border));
+  }
+
+  .grid-featured .card {
+    border-color: var(--border-ui);
+  }
+
+  /* Hidden by the listing filter script. */
+  .card[hidden],
+  .arsenal-item[hidden] {
+    display: none;
+  }
+
+  /* ======================================================================
+     Stats
+     ====================================================================== */
+
+  .hero-stats,
+  .stat-grid {
+    margin: 0;
+  }
+
+  .stat dt {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+  }
+
+  .stat dd {
+    margin: 0;
+    font-size: var(--fs-xl);
+    font-weight: 700;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+    text-shadow: var(--glow-text);
+  }
+
+  .stat-grid {
+    display: grid;
+    gap: var(--sp-3);
+  }
+
+  .stat-grid .stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--sp-3);
+    border-bottom: var(--hair) dotted var(--border);
+    padding-bottom: var(--sp-1);
+  }
+
+  .stat-grid .stat dd {
+    font-size: var(--fs-base);
+  }
+
+  /* ======================================================================
+     Article meta
+     ====================================================================== */
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+    margin-top: var(--sp-5);
+    padding-top: var(--sp-4);
+    border-top: var(--hair) solid var(--border-soft);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--sp-2);
+  }
+
+  .article-flags,
+  .article-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: var(--sp-4) 0 0;
+  }
+
+  .article-cover {
+    margin: var(--sp-6) 0 0;
+  }
+
+  /* ======================================================================
+     Writeup fact box
+     ====================================================================== */
+
+  .writeup-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+    gap: var(--sp-3) var(--sp-5);
+    margin-top: var(--sp-5);
+    padding: var(--sp-4);
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-sm);
+  }
+
+  .writeup-field dt {
+    font-size: var(--fs-3xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+  }
+
+  .writeup-field dd {
+    margin: var(--sp-1) 0 0;
+    font-size: var(--fs-sm);
+    color: var(--text);
+  }
+
+  .writeup-techniques {
+    margin-top: var(--sp-4);
+  }
+
+  .writeup-techniques .chip-list {
+    margin-top: var(--sp-2);
+  }
+
+  /* ======================================================================
+     Table of contents
+     ====================================================================== */
+
+  .toc {
+    min-width: 0;
+    font-size: var(--fs-sm);
+  }
+
+  .toc-inner {
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    padding: var(--sp-4);
+    background: var(--surface);
+  }
+
+  .toc-title {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+    margin-bottom: var(--sp-3);
+  }
+
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    margin: 0;
+    counter-reset: none;
+  }
+
+  .toc-item a {
+    display: block;
+    padding: var(--sp-2);
+    font-size: var(--fs-xs);
+    line-height: 1.45;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-left: 2px solid var(--border);
+  }
+
+  .toc-level-3 a { padding-left: var(--sp-4); }
+  .toc-level-4 a { padding-left: var(--sp-6); font-size: var(--fs-3xs); }
+
+  @media (hover: hover) {
+    .toc-item a:hover {
+      color: var(--text-strong);
+      border-left-color: var(--border-ui);
+      background: var(--surface-2);
+    }
+  }
+
+  /* The scrollspy sets one of these; both are honoured so the stylesheet is
+     not coupled to whichever one the script picks. */
+  .toc-item a.is-active,
+  .toc-item a[aria-current] {
+    color: var(--accent);
+    border-left-color: var(--accent);
+    background: var(--surface-2);
+  }
+
+  .toc-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin-top: var(--sp-4);
+    padding-top: var(--sp-3);
+    border-top: var(--hair) solid var(--border-soft);
+  }
+
+  /* Below the two-column breakpoint the TOC is a capped, scrollable block
+     above the prose rather than a rail. */
+  @media (max-width: 63.99rem) {
+    .toc-inner {
+      max-height: 45vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .toc-inner {
+      position: sticky;
+      top: 5rem;
+      max-height: calc(100vh - 7rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+  }
+
+  /* ======================================================================
+     Reading progress
+     ====================================================================== */
+
+  .progress {
+    position: fixed;
+    inset-inline: 0;
+    top: 0;
+    height: 3px;
+    z-index: var(--z-progress);
+    background: var(--border-soft);
+    pointer-events: none;
+  }
+
+  /* Driven by a custom property the reading-progress script sets on either
+     the track or the bar; scaleX is the only compositor-cheap way to do it.
+     Both property names are accepted so the CSS does not have to be edited
+     if the script settles on the other one. */
+  .progress-bar {
+    height: 100%;
+    transform-origin: 0 50%;
+    transform: scaleX(var(--progress, var(--reading-progress, 0)));
+    background: linear-gradient(90deg, var(--accent-dim), var(--accent));
+    box-shadow: var(--glow-sm);
+    will-change: transform;
+  }
+
+  /* ======================================================================
+     Filters
+     ====================================================================== */
+
+  .filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+    padding: var(--sp-4);
+    background: var(--bg-alt);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+  }
+
+  .filter-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+  }
+
+  .filter-chips {
+    gap: var(--sp-2);
+    row-gap: var(--sp-2);
+  }
+
+  .filter-label {
+    display: inline-flex;
+    align-items: center;
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  .filter-input,
+  .search-input,
+  .palette-input,
+  .term-input {
+    flex: 1 1 12rem;
+    min-width: 0;
+    padding: var(--sp-3);
+    color: var(--text);
+    background: var(--surface);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+    caret-color: var(--accent);
+  }
+
+  .filter-input:focus-visible,
+  .search-input:focus-visible {
+    border-color: var(--accent);
+  }
+
+  .chip-filter {
+    cursor: pointer;
+    color: var(--text-muted);
+    background: var(--surface);
+    transition: color var(--dur-1) var(--ease), border-color var(--dur-1) var(--ease);
+  }
+
+  @media (hover: hover) {
+    .chip-filter:hover {
+      color: var(--text-strong);
+      border-color: var(--border-ui);
+    }
+  }
+
+  .chip-filter.is-active,
+  .chip-filter[aria-pressed="true"] {
+    color: var(--text-invert);
+    background: var(--accent);
+    border-color: var(--accent);
+    font-weight: 700;
+  }
+
+  .filter-status {
+    margin: 0;
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    min-height: 1.2em;
+  }
+
+  /* ======================================================================
+     Search page
+     ====================================================================== */
+
+  .search-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    margin-bottom: var(--sp-4);
+  }
+
+  .search-prompt {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: var(--fs-md);
+  }
+
+  .search-status {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    min-height: 1.2em;
+  }
+
+  .search-results {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);
+    margin: var(--sp-4) 0 0;
+  }
+
+  /* The result items are built by the search script; styling the list child
+     directly means the markup can change without breaking the page. */
+  .search-results > li {
+    padding: var(--sp-4);
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+  }
+
+  .search-results > li a {
+    font-size: var(--fs-md);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  .search-results > li p {
+    margin-top: var(--sp-2);
+    font-family: var(--font-prose);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-muted);
+  }
+
+  .search-results mark,
+  .palette-results mark {
+    background: var(--selection-bg);
+    color: var(--text-strong);
+    padding-inline: 0.1em;
+    border-radius: 2px;
+  }
+
+  /* ======================================================================
+     Pagination
+     ====================================================================== */
+
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-3);
+    margin-top: var(--sp-8);
+    padding-top: var(--sp-4);
+    border-top: var(--hair) solid var(--border-soft);
+  }
+
+  .pagination-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    font-size: var(--fs-sm);
+    text-decoration: none;
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-sm);
+    color: var(--text);
+  }
+
+  @media (hover: hover) {
+    .pagination-link:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+  }
+
+  .pagination-status {
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ======================================================================
+     Post navigation
+     ====================================================================== */
+
+  .post-nav {
+    display: grid;
+    gap: var(--sp-4);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 44rem) {
+    .post-nav {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .post-nav-link {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    padding: var(--sp-4);
+    text-decoration: none;
+    background: var(--surface);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-md);
+    color: var(--text);
+    transition: border-color var(--dur-1) var(--ease);
+  }
+
+  .post-nav-prev {
+    grid-column: 1;
+  }
+
+  /* When only the next link exists it should still sit on the right. */
+  .post-nav-next {
+    text-align: right;
+    grid-column: -2 / -1;
+  }
+
+  .post-nav-label {
+    font-size: var(--fs-2xs);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-caps);
+    color: var(--text-muted);
+  }
+
+  .post-nav-title {
+    font-size: var(--fs-sm);
+    font-weight: 700;
+    line-height: 1.35;
+  }
+
+  @media (hover: hover) {
+    .post-nav-link:hover {
+      border-color: var(--accent);
+    }
+
+    .post-nav-link:hover .post-nav-title {
+      color: var(--accent);
+    }
+  }
+
+  /* ======================================================================
+     Arsenal
+     ====================================================================== */
+
+  .arsenal-item {
+    padding: var(--sp-4);
+    gap: var(--sp-3);
+  }
+
+  .arsenal-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--sp-2);
+  }
+
+  .arsenal-name {
+    font-size: var(--fs-md);
+    margin: 0;
+  }
+
+  .arsenal-name a {
+    text-decoration: none;
+  }
+
+  .arsenal-summary {
+    font-family: var(--font-prose);
+    font-size: var(--fs-sm);
+    line-height: 1.6;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .arsenal-notes {
+    font-size: var(--fs-sm);
+  }
+
+  .arsenal-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: auto 0 0;
+    padding-top: var(--sp-2);
+  }
+
+  /* ======================================================================
+     Command palette
+     ====================================================================== */
+
+  /* No `display` here on purpose.  The user-agent rule `[hidden] {display:none}`
+     is an author-loses-to-nobody rule: ANY author declaration of `display` on
+     this selector beats it, so declaring `display:flex` in the base rule would
+     pin both modals permanently open.  The display switch lives solely in the
+     `:not([hidden])` rule below.  This is a real bug that shipped once — do not
+     "tidy" a display value back into these base rules. */
+  .palette {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    align-items: flex-start;
+    justify-content: center;
+    padding: clamp(1rem, 6vh, 6rem) var(--sp-4) var(--sp-4);
+  }
+
+  .palette:not([hidden]),
+  .term:not([hidden]) {
+    display: flex;
+  }
+
+  .palette-backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim);
+  }
+
+  .palette-panel {
+    position: relative;
+    z-index: 1;
+    width: min(42rem, 100%);
+    max-height: min(70vh, 40rem);
+    display: flex;
+    flex-direction: column;
+    background: var(--surface);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-lg);
+    box-shadow: 0 18px 60px rgb(0 0 0 / 65%), var(--glow-md);
+    overflow: hidden;
+  }
+
+  .palette-input-row {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .palette-prompt {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: var(--fs-md);
+  }
+
+  .palette-input {
+    flex: 1 1 auto;
+    background: none;
+    border: 0;
+    padding: var(--sp-2) 0;
+    font-size: var(--fs-md);
+  }
+
+  /* The input is the only text field in the panel and the panel border already
+     frames it; a second box inside would read as a nested dialog.  The focus
+     ring is moved to the whole row so keyboard users still see a target. */
+  .palette-input:focus,
+  .palette-input:focus-visible {
+    outline: none;
+  }
+
+  .palette-input-row:focus-within {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: -2px;
+  }
+
+  .palette-close {
+    padding: var(--sp-1) var(--sp-2);
+    font-size: var(--fs-2xs);
+    color: var(--text-muted);
+    border: var(--hair) solid var(--border);
+    border-radius: var(--r-xs);
+  }
+
+  .palette-hint,
+  .palette-status {
+    margin: 0;
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--fs-2xs);
+    color: var(--text-muted);
+  }
+
+  .palette-results {
+    flex: 1 1 auto;
+    margin: 0;
+    padding: var(--sp-2);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  .palette-results:empty {
+    padding: 0;
+  }
+
+  .palette-results > li,
+  .palette-results [role="option"] {
+    display: block;
+    padding: var(--sp-3);
+    border-radius: var(--r-sm);
+    border-left: 2px solid transparent;
+    cursor: pointer;
+    font-size: var(--fs-sm);
+  }
+
+  .palette-results a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .palette-results [aria-selected="true"] {
+    background: var(--surface-2);
+    border-left-color: var(--accent);
+    color: var(--text-strong);
+  }
+
+  @media (hover: hover) {
+    .palette-results > li:hover {
+      background: var(--surface-2);
+    }
+  }
+
+  .palette-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2) var(--sp-4);
+    padding: var(--sp-3) var(--sp-4);
+    border-top: var(--hair) solid var(--border);
+    font-size: var(--fs-3xs);
+    color: var(--text-muted);
+  }
+
+  .palette-legend span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--sp-1);
+  }
+
+  kbd {
+    display: inline-block;
+    padding: 0.1em 0.4em;
+    font-size: 0.95em;
+    line-height: 1.4;
+    color: var(--text);
+    background: var(--surface-2);
+    border: var(--hair) solid var(--border-ui);
+    border-bottom-width: 2px;
+    border-radius: var(--r-xs);
+  }
+
+  /* ======================================================================
+     In-page terminal
+     ====================================================================== */
+
+  /* See the note on `.palette`: no `display` in this base rule, or the terminal
+     is pinned open over every page. */
+  .term {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    align-items: flex-end;
+    justify-content: center;
+    padding: var(--sp-4);
+    padding-bottom: max(var(--sp-4), env(safe-area-inset-bottom, 0px));
+    background: var(--scrim);
+  }
+
+  @media (min-width: 48rem) {
+    .term {
+      align-items: center;
+    }
+  }
+
+  .term-panel {
+    display: flex;
+    flex-direction: column;
+    width: min(56rem, 100%);
+    height: min(70vh, 34rem);
+    background: var(--code-bg);
+    border: var(--hair) solid var(--border-ui);
+    border-radius: var(--r-lg);
+    box-shadow: 0 18px 60px rgb(0 0 0 / 65%), var(--glow-md);
+    overflow: hidden;
+  }
+
+  .term-chrome,
+  .terminal-chrome {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-2) var(--sp-3);
+    background: var(--surface-2);
+    border-bottom: var(--hair) solid var(--border);
+  }
+
+  .dot {
+    width: 0.7em;
+    height: 0.7em;
+    border-radius: 50%;
+    flex: none;
+    /* Traffic lights are literal, not themed: they are a picture of a window
+       chrome, not a UI control, and recolouring them per theme reads as a
+       bug.  They are aria-hidden and carry no information. */
+    background: currentColor;
+  }
+
+  .dot-r { color: #ff5f57; }
+  .dot-y { color: #febc2e; }
+  .dot-g { color: #28c840; }
+
+  .term-title,
+  .terminal-title {
+    font-size: var(--fs-2xs);
+    font-weight: 400;
+    color: var(--text-muted);
+    letter-spacing: var(--tracking-wide);
+    margin-left: var(--sp-2);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .term-close {
+    margin-left: auto;
+    min-width: 2rem;
+    min-height: 2rem;
+    font-size: var(--fs-md);
+    line-height: 1;
+    color: var(--text-muted);
+    border-radius: var(--r-xs);
+  }
+
+  @media (hover: hover) {
+    .term-close:hover {
+      color: var(--c-danger);
+    }
+  }
+
+  .term-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: var(--sp-3) var(--sp-4);
+    font-size: var(--fs-sm);
+    line-height: var(--lh-code);
+    white-space: pre-wrap;
+    word-break: break-word;
+    color: var(--tok-out);
+  }
+
+  .term-body .prompt,
+  .term-body .term-echo {
+    color: var(--accent);
+  }
+
+  .term-body .term-error {
+    color: var(--tok-err);
+  }
+
+  .term-body .term-ok {
+    color: var(--tok-ok);
+  }
+
+  .term-body a {
+    color: var(--link);
+  }
+
+  .term-form {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-2);
+    padding: var(--sp-3) var(--sp-4);
+    border-top: var(--hair) solid var(--border);
+    background: var(--code-bg);
+  }
+
+  .term-prompt {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: var(--fs-sm);
+    white-space: nowrap;
+  }
+
+  /* The input has to read as the continuation of the prompt line, so it
+     carries no box of its own.  The focus ring moves to the form row so the
+     control is still visibly focused. */
+  .term-input {
+    flex: 1 1 auto;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    font-size: var(--fs-sm);
+    color: var(--text);
+    caret-color: var(--accent);
+  }
+
+  .term-input:focus,
+  .term-input:focus-visible {
+    outline: none;
+  }
+
+  .term-form:focus-within {
+    outline: var(--focus-w) solid var(--focus);
+    outline-offset: -2px;
+  }
+
+  .term-hint {
+    margin: 0;
+    padding: var(--sp-2) var(--sp-4);
+    font-size: var(--fs-3xs);
+    color: var(--text-muted);
+    border-top: var(--hair) solid var(--border-soft);
+  }
+
+  /* ======================================================================
+     Toast
+     ====================================================================== */
+
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: max(var(--sp-5), env(safe-area-inset-bottom, 0px));
+    z-index: var(--z-toast);
+    max-width: min(28rem, calc(100vw - 2rem));
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-2);
+    color: var(--text-strong);
+    border: var(--hair) solid var(--border-ui);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--r-sm);
+    font-size: var(--fs-sm);
+    box-shadow: 0 10px 30px rgb(0 0 0 / 55%);
+    transform: translate(-50%, 0);
+    transition: opacity var(--dur-2) var(--ease), transform var(--dur-2) var(--ease);
+  }
+
+  /* An empty live region is the resting state, so :empty is the visibility
+     switch.  That works no matter which class the script chooses to add. */
+  .toast:empty {
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 0.75rem);
+  }
+
+  .toast:not(:empty) {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .toast.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  /* ======================================================================
+     Footer
+     ====================================================================== */
+
+  .site-footer {
+    margin-top: auto;
+    border-top: var(--hair) solid var(--border);
+    background: var(--bg-alt);
+    padding-block: var(--sp-7) var(--sp-4);
+  }
+
+  .footer-inner {
+    display: grid;
+    gap: var(--sp-6);
+    grid-template-columns: 1fr;
+  }
+
+  @media (min-width: 44rem) {
+    .footer-inner {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (min-width: 68rem) {
+    .footer-inner {
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+    }
+  }
+
+  .footer-col {
+    min-width: 0;
+  }
+
+  .footer-brand {
+    grid-column: 1 / -1;
+  }
+
+  @media (min-width: 68rem) {
+    .footer-brand {
+      grid-column: auto;
+    }
+  }
+
+  .footer-stats {
+    align-self: start;
+  }
+
+  .footer-sig {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    font-size: var(--fs-sm);
+  }
+
+  .footer-tag {
+    color: var(--text);
+  }
+
+  .footer-note {
+    margin-top: var(--sp-3);
+    font-size: var(--fs-xs);
+    color: var(--text-muted);
+    max-width: 40ch;
+  }
+
+  .footer-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-2);
+    margin: 0;
+    font-size: var(--fs-sm);
+  }
+
+  .footer-list a {
+    text-decoration: none;
+    color: var(--text-muted);
+  }
+
+  @media (hover: hover) {
+    .footer-list a:hover {
+      color: var(--accent);
+    }
+  }
+
+  .footer-handle {
+    color: var(--text-muted);
+    font-size: var(--fs-2xs);
+  }
+
+  .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--sp-2);
+    margin-top: var(--sp-7);
+    padding-top: var(--sp-4);
+    border-top: var(--hair) solid var(--border-soft);
+    font-size: var(--fs-2xs);
+    color: var(--text-muted);
+  }
+
+  .footer-build {
+    font-variant-numeric: tabular-nums;
+  }
+}

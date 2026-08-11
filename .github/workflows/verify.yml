@@ -1,0 +1,64 @@
+name: Verify
+
+# Runs on pull requests and on any branch that is not main. Never deploys.
+# This is the gate that should fail loudly; deploy.yml assumes main is already
+# known-good.
+
+on:
+  pull_request:
+  push:
+    branches-ignore: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Build, verify, test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ['3.11', '3.12', '3.13']
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Build
+        run: python3 build.py --strict
+
+      - name: Verify output
+        run: python3 build.py --check --strict
+
+      - name: Tests
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Reproducible build check
+        # Two builds of the same commit must be byte-identical. Nondeterminism
+        # here means something read the clock, iterated a set, or depended on
+        # filesystem order -- all of which produce diffs that hide real changes.
+        run: |
+          set -euo pipefail
+          python3 build.py --quiet
+          cp -r dist /tmp/build-a
+          rm -rf dist
+          python3 build.py --quiet
+          cp -r dist /tmp/build-b
+          # The build stamp is the one legitimate difference; feeds carry it.
+          if diff -r -q \
+              --exclude='feed.xml' --exclude='atom.xml' --exclude='feed.json' \
+              --exclude='sw.js' --exclude='.ssg-output' \
+              /tmp/build-a /tmp/build-b; then
+            echo "build is reproducible"
+          else
+            echo "::error::build is not reproducible"
+            exit 1
+          fi

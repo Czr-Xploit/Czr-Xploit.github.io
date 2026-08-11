@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script type="application/ld+json">{{ structured_data }}</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="progress" id="reading-progress" aria-hidden="true"><div class="progress-bar"></div></div>
+
+<article class="article article-writeup">
+
+  <header class="article-head">
+    <div class="wrap wrap-narrow">
+      <p class="breadcrumb" aria-hidden="true">
+        <span class="prompt">$</span> cat ./writeups/{{ doc.slug }}.md
+      </p>
+
+      <h1 class="article-title">{{ doc.title }}</h1>
+      <p class="article-summary">{{ doc.summary }}</p>
+
+      <dl class="writeup-box">
+        {% if doc.platform %}
+        <div class="writeup-field"><dt>{{ t.platform }}</dt><dd>{{ doc.platform }}</dd></div>
+        {% endif %}
+        {% if doc.difficulty %}
+        <div class="writeup-field"><dt>{{ t.difficulty }}</dt>
+          <dd><span class="chip chip-difficulty" data-level="{{ doc.difficulty | lower }}">{{ doc.difficulty }}</span></dd>
+        </div>
+        {% endif %}
+        {% if doc.os_name %}
+        <div class="writeup-field"><dt>{{ t.operating_system }}</dt><dd>{{ doc.os_name }}</dd></div>
+        {% endif %}
+        <div class="writeup-field"><dt>{{ t.published }}</dt>
+          <dd><time datetime="{{ doc.iso_date }}">{{ doc.date | localdate:lang }}</time></dd>
+        </div>
+        <div class="writeup-field"><dt>{{ t.reading_time }}</dt><dd>{{ doc.reading_minutes }}</dd></div>
+      </dl>
+
+      {% if doc.techniques %}
+      <div class="writeup-techniques">
+        <p class="meta-label">{{ t.techniques }}</p>
+        <ul class="chip-list">
+          {% for item in doc.techniques %}<li><span class="chip">{{ item }}</span></li>{% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if doc.tags %}
+      <ul class="article-tags">
+        {% for tag in doc.tags %}
+        <li><a class="tag tag-link" href="{{ page.tags_url }}{{ tag | tagkey }}/">#{{ tag }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </header>
+
+  <div class="wrap article-layout">
+
+    {% if doc.toc and toc %}
+    <aside class="toc" aria-labelledby="toc-title">
+      <div class="toc-inner">
+        <h2 class="toc-title" id="toc-title">{{ t.on_this_page }}</h2>
+        <nav>
+          <ol class="toc-list">
+            {% for entry in toc %}
+            <li class="toc-item toc-level-{{ entry.level }}">
+              <a href="#{{ entry.slug }}" data-toc-link="{{ entry.slug }}">{{ entry.text }}</a>
+            </li>
+            {% endfor %}
+          </ol>
+        </nav>
+      </div>
+    </aside>
+    {% endif %}
+
+    <div class="prose" id="article-body">
+      {{ content }}
+    </div>
+
+  </div>
+
+  <footer class="wrap wrap-narrow article-footer">
+    {% if doc.previous or doc.next %}
+    <nav class="post-nav" aria-label="{{ t.related }}">
+      {% if doc.previous %}
+      <a class="post-nav-link post-nav-prev" href="{{ doc.previous.url }}" rel="prev">
+        <span class="post-nav-label"><span aria-hidden="true">←</span> {{ t.previous_post }}</span>
+        <span class="post-nav-title">{{ doc.previous.title }}</span>
+      </a>
+      {% endif %}
+      {% if doc.next %}
+      <a class="post-nav-link post-nav-next" href="{{ doc.next.url }}" rel="next">
+        <span class="post-nav-label">{{ t.next_post }} <span aria-hidden="true">→</span></span>
+        <span class="post-nav-title">{{ doc.next.title }}</span>
+      </a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% if doc.related %}
+    <section class="related" aria-labelledby="related-title">
+      <h2 class="section-title" id="related-title">
+        <span class="section-marker" aria-hidden="true">##</span> {{ t.related }}
+      </h2>
+      <div class="grid grid-cards">
+        {% for item in doc.related %}{% include "card.html" %}{% endfor %}
+      </div>
+    </section>
+    {% endif %}
+  </footer>
+
+</article>
+
+{% endblock %}

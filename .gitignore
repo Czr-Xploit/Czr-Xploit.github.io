@@ -1,0 +1,46 @@
+# Build output
+/dist/
+/.ssg-cache/
+
+# Partial files left behind by tooling that writes large files in chunks
+*.part
+*.part[0-9]*
+*.tail
+
+# Agent definitions are the only thing published from .claude/ — an allowlist,
+# because tooling that assembles these files leaves scratch fragments beside
+# them and a denylist keeps losing that race.
+.claude/*
+!.claude/agents/
+.claude/agents/*
+!.claude/agents/*.md
+
+# Scratch space used by the research-forge agent for claim ledgers
+/.scratch/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Secrets — nothing here should ever exist, but belt and braces
+*.pem
+*.key
+!theme/static/pgp/*.asc
+.env
+.env.*
+secrets.json

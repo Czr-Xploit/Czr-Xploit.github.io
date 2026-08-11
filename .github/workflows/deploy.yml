@@ -1,0 +1,91 @@
+name: Build and deploy
+
+# Publishes dist/ to GitHub Pages on every push to main.
+#
+# NOTE ON ACTION PINNING
+# ----------------------
+# The actions below are referenced by major-version tag, not by commit SHA.
+# A tag is mutable: whoever controls the action repository can move it, which
+# makes it a supply-chain path into this workflow. Because this workflow has
+# `id-token: write` and `pages: write`, that is worth closing.
+#
+# Pin them before you rely on this for anything you care about:
+#
+#   ./scripts/pin-actions.sh
+#
+# That script resolves each tag to the commit it currently points at and
+# rewrites this file with `uses: owner/repo@<sha> # vN` lines. Re-run it when
+# you deliberately want to take a new version.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Least privilege: the build job needs nothing but the source, and only the
+# deploy job gets the tokens that can publish.
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Confirm there are no dependencies to install
+        run: |
+          set -euo pipefail
+          for f in requirements.txt package.json package-lock.json Pipfile poetry.lock; do
+            if [ -f "$f" ]; then
+              echo "::error::$f exists. This project is meant to build with the standard library only."
+              exit 1
+            fi
+          done
+          python3 -c "import sys; print('python', sys.version)"
+
+      - name: Build
+        run: python3 build.py --strict
+
+      - name: Verify
+        run: python3 build.py --check --strict
+
+      - name: Run the test suite
+        run: python3 -m unittest discover -s tests -v
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    permissions:
+      pages: write
+      id-token: write
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

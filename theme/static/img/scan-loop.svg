@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360"
+     role="img" aria-label="Barrido de un escaneo de puertos en bucle">
+  <title>port scan sweep</title>
+  <!--
+    Animated placeholder, deliberately SVG rather than GIF.
+    A GIF of this would be ~400 KB; this is under 2 KB, scales to any density,
+    and the whole animation is disabled by the reduced-motion media query below.
+
+    The 16:9 viewBox is load-bearing: card covers are rendered into an
+    `aspect-ratio: 16/9` box with `object-fit: cover`, so a wider ratio gets
+    cropped on both sides and the labels lose their first characters.
+  -->
+  <style>
+    .bg { fill: #05070a; }
+    .grid { stroke: #1b3a2a; stroke-width: 1; }
+    .cell { fill: #12301f; }
+    .hit { fill: #7ef2a8; }
+    .label { font: 13px ui-monospace, "DejaVu Sans Mono", monospace; fill: #6fbf8d; }
+    .head { font: 13px ui-monospace, "DejaVu Sans Mono", monospace; fill: #7ef2a8; }
+    .sweep { fill: #7ef2a8; opacity: .13; }
+
+    .cell, .hit { animation: pop 4s steps(1) infinite; }
+    .c2 { animation-delay: .35s } .c3 { animation-delay: .7s }
+    .c4 { animation-delay: 1.05s } .c5 { animation-delay: 1.4s }
+    .c6 { animation-delay: 1.75s } .c7 { animation-delay: 2.1s }
+    .c8 { animation-delay: 2.45s }
+    @keyframes pop { 0%, 45% { opacity: 0 } 50%, 100% { opacity: 1 } }
+
+    #sweep { animation: slide 4s linear infinite; }
+    @keyframes slide { from { transform: translateX(0) } to { transform: translateX(600px) } }
+
+    @media (prefers-reduced-motion: reduce) {
+      .cell, .hit { animation: none; opacity: 1; }
+      #sweep { animation: none; opacity: 0; }
+    }
+  </style>
+
+  <rect class="bg" width="640" height="360"/>
+  <rect id="sweep" class="sweep" x="0" y="0" width="40" height="360"/>
+
+  <text class="head" x="28" y="44">czrxplo1t@lab :: sweep 10.0.0.0/24</text>
+
+  <g class="grid" opacity=".45">
+    <line x1="28" y1="66" x2="612" y2="66"/>
+    <line x1="28" y1="176" x2="612" y2="176"/>
+    <line x1="28" y1="306" x2="612" y2="306"/>
+  </g>
+
+  <g>
+    <rect class="cell"    x="28"  y="100" width="60" height="26" rx="3"/>
+    <rect class="hit  c2" x="102" y="100" width="60" height="26" rx="3"/>
+    <rect class="cell c3" x="176" y="100" width="60" height="26" rx="3"/>
+    <rect class="hit  c4" x="250" y="100" width="60" height="26" rx="3"/>
+    <rect class="cell c5" x="324" y="100" width="60" height="26" rx="3"/>
+    <rect class="cell c6" x="398" y="100" width="60" height="26" rx="3"/>
+    <rect class="hit  c7" x="472" y="100" width="60" height="26" rx="3"/>
+    <rect class="cell c8" x="546" y="100" width="60" height="26" rx="3"/>
+  </g>
+
+  <text class="label" x="28" y="212">22/tcp    open    ssh</text>
+  <text class="label" x="28" y="244">80/tcp    open    http</text>
+  <text class="label" x="28" y="276">443/tcp   open    https</text>
+  <text class="label" x="28" y="338" opacity=".7">3 hosts up · 24 ports closed</text>
+</svg>

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> cat ./tags.index | sort -rn</p>
+    <h1 class="page-title glitch" data-text="{{ t.tags_title }}">{{ t.tags_title }}</h1>
+    <p class="page-count">{{ tags | length }}</p>
+  </header>
+
+  <ul class="tag-cloud tag-cloud-large">
+    {% for tag in tags %}
+    <li>
+      <a class="tag tag-link" href="{{ tag.url }}" data-count="{{ tag.count }}">
+        #{{ tag.name }}<span class="tag-count">{{ tag.count }}</span>
+      </a>
+    </li>
+    {% empty %}
+    <li><p class="empty">{{ t.empty_list }}</p></li>
+    {% endfor %}
+  </ul>
+
+</div>
+
+{% endblock %}

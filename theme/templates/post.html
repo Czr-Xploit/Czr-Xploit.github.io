@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+
+{% block head_extra %}
+<script type="application/ld+json">{{ structured_data }}</script>
+{% endblock %}
+
+{% block content %}
+
+<div class="progress" id="reading-progress" aria-hidden="true"><div class="progress-bar"></div></div>
+
+<article class="article" itemscope>
+
+  <header class="article-head">
+    <div class="wrap wrap-narrow">
+      <p class="breadcrumb" aria-hidden="true">
+        <span class="prompt">$</span> cat ./{{ page.section }}/{{ doc.slug }}.md
+      </p>
+
+      <h1 class="article-title">{{ doc.title }}</h1>
+
+      <p class="article-summary">{{ doc.summary }}</p>
+
+      <div class="article-meta">
+        <span class="meta-item">
+          <span class="meta-label">{{ t.published }}</span>
+          <time datetime="{{ doc.iso_date }}">{{ doc.date | localdate:lang }}</time>
+        </span>
+        {% if doc.updated %}
+        <span class="meta-item">
+          <span class="meta-label">{{ t.updated }}</span>
+          <time datetime="{{ doc.updated | isodate }}">{{ doc.updated | localdate:lang }}</time>
+        </span>
+        {% endif %}
+        <span class="meta-item">{{ doc.reading_minutes }} {{ t.reading_time }}</span>
+        <span class="meta-item">{{ doc.word_count | number }} {{ t.stats_words }}</span>
+      </div>
+
+      {% if doc.cve or doc.severity or doc.disclosure_status %}
+      <div class="article-flags">
+        {% for id in doc.cve %}<span class="chip chip-cve">{{ id }}</span>{% endfor %}
+        {% if doc.severity %}<span class="chip chip-severity" data-level="{{ doc.severity | lower }}">{{ t.severity }}: {{ doc.severity }}</span>{% endif %}
+        {% if doc.disclosure_status %}<span class="chip chip-disclosure">{{ t.disclosure }}: {{ doc.disclosure_status }}</span>{% endif %}
+      </div>
+      {% endif %}
+
+      {% if doc.tags %}
+      <ul class="article-tags">
+        {% for tag in doc.tags %}
+        <li><a class="tag tag-link" href="{{ page.tags_url }}{{ tag | tagkey }}/">#{{ tag }}</a></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+
+    {% if doc.cover_gif or doc.cover %}
+    <div class="wrap">
+      <figure class="article-cover gif-figure">
+        <div class="gif-frame">
+          <img class="gif-media" src="{{ doc.cover }}" data-gif="{{ doc.cover_gif }}"
+               alt="{{ doc.cover_alt }}" width="1280" height="640"
+               fetchpriority="high" decoding="async" />
+          {% if doc.cover_gif %}
+          <button type="button" class="gif-toggle" data-action="toggle-gif" aria-label="{{ t.share }}">
+            <span class="gif-toggle-icon" aria-hidden="true">▶</span><span class="gif-toggle-text">GIF</span>
+          </button>
+          {% endif %}
+        </div>
+      </figure>
+    </div>
+    {% endif %}
+  </header>
+
+  <div class="wrap article-layout">
+
+    {% if doc.toc and toc %}
+    <aside class="toc" aria-labelledby="toc-title">
+      <div class="toc-inner">
+        <h2 class="toc-title" id="toc-title">{{ t.on_this_page }}</h2>
+        <nav>
+          <ol class="toc-list">
+            {% for entry in toc %}
+            <li class="toc-item toc-level-{{ entry.level }}">
+              <a href="#{{ entry.slug }}" data-toc-link="{{ entry.slug }}">{{ entry.text }}</a>
+            </li>
+            {% endfor %}
+          </ol>
+        </nav>
+        <p class="toc-actions">
+          <button type="button" class="btn-mini" data-action="copy-link">{{ t.copy_link }}</button>
+          <a class="btn-mini" href="#main">{{ t.back_to_top }}</a>
+        </p>
+      </div>
+    </aside>
+    {% endif %}
+
+    <div class="prose" id="article-body">
+      {{ content }}
+    </div>
+
+  </div>
+
+  <footer class="wrap wrap-narrow article-footer">
+
+    {% if doc.previous or doc.next %}
+    <nav class="post-nav" aria-label="{{ t.related }}">
+      {% if doc.previous %}
+      <a class="post-nav-link post-nav-prev" href="{{ doc.previous.url }}" rel="prev">
+        <span class="post-nav-label"><span aria-hidden="true">←</span> {{ t.previous_post }}</span>
+        <span class="post-nav-title">{{ doc.previous.title }}</span>
+      </a>
+      {% endif %}
+      {% if doc.next %}
+      <a class="post-nav-link post-nav-next" href="{{ doc.next.url }}" rel="next">
+        <span class="post-nav-label">{{ t.next_post }} <span aria-hidden="true">→</span></span>
+        <span class="post-nav-title">{{ doc.next.title }}</span>
+      </a>
+      {% endif %}
+    </nav>
+    {% endif %}
+
+    {% if doc.related %}
+    <section class="related" aria-labelledby="related-title">
+      <h2 class="section-title" id="related-title">
+        <span class="section-marker" aria-hidden="true">##</span> {{ t.related }}
+      </h2>
+      <div class="grid grid-cards">
+        {% for item in doc.related %}{% include "card.html" %}{% endfor %}
+      </div>
+    </section>
+    {% endif %}
+
+  </footer>
+
+</article>
+
+{% endblock %}

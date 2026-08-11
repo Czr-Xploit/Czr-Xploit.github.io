@@ -1,0 +1,442 @@
+/* ==========================================================================
+   tokens.css — design tokens and the four CRT phosphor themes
+   ==========================================================================
+
+   BUILD CONSTRAINT (read before editing any math in this bundle)
+   -------------------------------------------------------------
+   tools/ssg/assets.py:minify_css() collapses whitespace around `+`, which
+   turns `calc(1rem + 2px)` into `calc(1rem+2px)` — invalid CSS, because the
+   `+` operator in a math function requires surrounding whitespace.  Every
+   fluid value in this bundle therefore expresses addition as subtraction of
+   a negative (`0.97rem - -0.16vw`).  It looks wrong; it is deliberate, it is
+   valid CSS, and it survives the minifier.  `-` is not touched by the regex.
+
+   Second, related trap: the same minifier lifts quoted strings out of the
+   source BEFORE it strips comments, so a stray apostrophe or double quote
+   inside a comment pairs with the next one anywhere in the bundle, hides the
+   comment terminator inside a placeholder, and the comment-stripping pass
+   then swallows every rule up to the following comment.  It silently deleted
+   half the bundle once.  No comment in these six files contains a quote
+   character of either kind; keep it that way.  Also avoid braces in comments,
+   which is what makes a per-file brace count a meaningful sanity check.
+
+   Also: no url() anywhere in this bundle, and no @import — tools/ssg/check.py
+   treats an off-origin stylesheet reference as a build blocker.
+
+   CONTRAST BUDGET
+   ---------------
+   Every ratio below was computed, not eyeballed.  Targets:
+     body text (--text)        >= 7:1   against --bg and every surface
+     muted text (--text-muted) >= 4.5:1 against --bg and every surface
+     UI borders (--border-ui)  >= 3:1   against --bg and every surface
+   The measured minimum for each theme is recorded next to its block.  The
+   fully saturated accent is reserved for glows, marks and small chrome; the
+   running text colour is desaturated and pulled slightly off the pure
+   phosphor hue, because saturated primaries on pure black produce chromatic
+   fringing that is genuinely painful over 6000 words.
+   ========================================================================== */
+
+@layer tokens, base, layout, components, content, effects;
+
+@layer tokens {
+
+  :root {
+    color-scheme: dark;
+
+    /* --- Type stacks -----------------------------------------------------
+       No web fonts ship with this site and none will.  Chrome, headings,
+       code and every UI affordance are monospace, which is the whole point
+       of the aesthetic.  Running prose paragraphs are NOT: a 6000-word
+       article set in a monospace face costs roughly 20% reading speed and
+       wrecks the rag, so `.prose` body copy falls back to the system UI
+       sans stack while everything around it stays fixed-pitch.  That trade
+       is the one place where the article beats the decoration. */
+    --font-mono: ui-monospace, "SFMono-Regular", "JetBrains Mono", "Fira Code", "Cascadia Code", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    --font-prose: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Inter", "Noto Sans", "Liberation Sans", Arial, sans-serif;
+    --font-ui: var(--font-mono);
+
+    /* --- Fluid type scale (see build constraint above for the `- -`) --- */
+    --fs-3xs: 0.6875rem;
+    --fs-2xs: 0.75rem;
+    --fs-xs: clamp(0.78rem, 0.755rem - -0.11vw, 0.84rem);
+    --fs-sm: clamp(0.86rem, 0.835rem - -0.13vw, 0.93rem);
+    --fs-base: clamp(1rem, 0.97rem - -0.16vw, 1.075rem);
+    --fs-md: clamp(1.08rem, 1.03rem - -0.24vw, 1.2rem);
+    --fs-lg: clamp(1.22rem, 1.13rem - -0.45vw, 1.48rem);
+    --fs-xl: clamp(1.42rem, 1.27rem - -0.74vw, 1.86rem);
+    --fs-2xl: clamp(1.66rem, 1.4rem - -1.28vw, 2.4rem);
+    --fs-3xl: clamp(1.95rem, 1.5rem - -2.2vw, 3rem);
+    --fs-hero: clamp(2.3rem, 1.45rem - -4.1vw, 4.4rem);
+
+    --lh-tight: 1.14;
+    --lh-heading: 1.24;
+    --lh-ui: 1.4;
+    --lh-body: 1.72;
+    --lh-code: 1.62;
+
+    --tracking-tight: -0.01em;
+    --tracking-wide: 0.06em;
+    --tracking-caps: 0.12em;
+
+    /* --- Space scale (4px base) --- */
+    --sp-0: 0;
+    --sp-1: 0.25rem;
+    --sp-2: 0.5rem;
+    --sp-3: 0.75rem;
+    --sp-4: 1rem;
+    --sp-5: 1.5rem;
+    --sp-6: 2rem;
+    --sp-7: 2.5rem;
+    --sp-8: 3rem;
+    --sp-9: 4rem;
+    --sp-10: 5rem;
+    --sp-12: 7rem;
+    --section-gap: clamp(2.75rem, 1.9rem - -3.2vw, 5.5rem);
+    --gutter: clamp(1rem, 0.55rem - -2.2vw, 2.25rem);
+
+    /* --- Measure and rails --- */
+    --wrap-max: 76rem;
+    --wrap-narrow: 50rem;
+    --measure: 74ch;
+    --toc-w: 16.5rem;
+    --article-gap: clamp(2rem, 1rem - -3vw, 4rem);
+
+    /* --- Radii: small, because CRTs do not have rounded pixels --- */
+    --r-xs: 2px;
+    --r-sm: 3px;
+    --r-md: 5px;
+    --r-lg: 8px;
+    --r-pill: 999px;
+
+    --hair: 1px;
+
+    /* --- Z layers --- */
+    --z-fx: 0;
+    --z-base: 1;
+    --z-sticky: 20;
+    --z-header: 40;
+    --z-progress: 45;
+    --z-modal: 80;
+    --z-toast: 90;
+    --z-skip: 100;
+
+    /* --- Motion --- */
+    --dur-1: 110ms;
+    --dur-2: 200ms;
+    --dur-3: 340ms;
+    --ease: cubic-bezier(0.2, 0.7, 0.3, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* --- Focus ring geometry (colour comes from the theme) --- */
+    --focus-w: 2px;
+    --focus-offset: 2px;
+
+    /* --- Semantic hues -------------------------------------------------
+       Deliberately NOT theme-scoped.  A danger callout is red in the amber
+       theme too, because the colour is carrying meaning, not brand.  Only
+       the surfaces under them change.  All of these measure >= 6.3:1 against
+       the lightest surface in any of the four themes. */
+    --c-note: #7fb4ff;
+    --c-tip: #6fe0a8;
+    --c-warning: #ffc247;
+    --c-danger: #ff7a84;
+    --c-success: #62e08f;
+    --c-info: #6ed8ea;
+    --c-quote: #b9c3cc;
+
+    --c-easy: #62e08f;
+    --c-medium: #ffc247;
+    --c-hard: #ff9a5c;
+    --c-insane: #ff6f9c;
+    --c-low: #7fb4ff;
+    --c-critical: #ff6b74;
+
+    /* Amount of accent mixed into a surface for tinted panels. */
+    --tint-weak: 7%;
+    --tint: 12%;
+    --tint-strong: 18%;
+  }
+
+  /* ======================================================================
+     PHOSPHOR (default, green)
+     text  #cdebd6  15.80:1 on --bg, 13.77:1 on the lightest surface
+     muted #7d9a8c   6.60:1 on --bg,  5.75:1 on the lightest surface
+     accent #35f08a 13.43:1 on --bg (used for marks/borders, not paragraphs)
+     border-ui #47705f 3.60:1 on --bg, 3.14:1 on the lightest surface
+     ====================================================================== */
+  :root,
+  [data-theme="phosphor"] {
+    --bg: #05070a;
+    --bg-alt: #080c11;
+    --surface: #0c1218;
+    --surface-2: #121a20;
+    --code-bg: #080d12;
+    --scrim: rgb(2 4 6 / 78%);
+
+    --text: #cdebd6;
+    --text-muted: #7d9a8c;
+    --text-strong: #e8fdf0;
+    --text-invert: #04140c;
+
+    --accent: #35f08a;
+    --accent-2: #4fd9bc;
+    --accent-dim: #1f8f57;
+    --accent-rgb: 53 240 138;
+    --bg-rgb: 5 7 10;
+
+    --link: #6ff2ae;
+    --link-visited: #9fdcc4;
+
+    --border-soft: #16241e;
+    --border: #1e332b;
+    --border-ui: #47705f;
+    --focus: #7dffc0;
+
+    --selection-bg: rgb(53 240 138 / 26%);
+    --selection-fg: #eafff2;
+
+    --tok-com: #7d9689;
+    --tok-kw: #5cf0a8;
+    --tok-str: #e0cf9a;
+    --tok-num: #8fd6f0;
+    --tok-fn: #b9f0da;
+    --tok-bi: #4fd9bc;
+    --tok-var: #cfe0d8;
+    --tok-op: #a8c4b8;
+    --tok-pun: #92aca1;
+    --tok-tag: #5cf0a8;
+    --tok-atr: #e0cf9a;
+    --tok-cst: #8fd6f0;
+    --tok-met: #c9b6ee;
+    --tok-err: #ff8a8a;
+    --tok-ok: #6ee7a0;
+    --tok-pmt: #35f08a;
+    --tok-out: #a9c2b6;
+  }
+
+  /* ======================================================================
+     AMBER
+     text  #f2ddb8  15.05:1 on --bg, 13.53:1 on the lightest surface
+     muted #a8916b   6.60:1 on --bg,  5.93:1 on the lightest surface
+     accent #ffb02e 10.95:1 on --bg
+     border-ui #7a6238 3.46:1 on --bg, 3.11:1 on the lightest surface
+     ====================================================================== */
+  [data-theme="amber"] {
+    --bg: #0a0806;
+    --bg-alt: #0e0b07;
+    --surface: #141009;
+    --surface-2: #1b1610;
+    --code-bg: #0d0a07;
+    --scrim: rgb(6 4 2 / 78%);
+
+    --text: #f2ddb8;
+    --text-muted: #a8916b;
+    --text-strong: #fff2d8;
+    --text-invert: #170f02;
+
+    --accent: #ffb02e;
+    --accent-2: #f0b878;
+    --accent-dim: #9a6c17;
+    --accent-rgb: 255 176 46;
+    --bg-rgb: 10 8 6;
+
+    --link: #ffc86a;
+    --link-visited: #dfc191;
+
+    --border-soft: #251c10;
+    --border: #33280f;
+    --border-ui: #7a6238;
+    --focus: #ffd98a;
+
+    --selection-bg: rgb(255 176 46 / 26%);
+    --selection-fg: #fff4de;
+
+    --tok-com: #9a8767;
+    --tok-kw: #ffc457;
+    --tok-str: #cfe0a5;
+    --tok-num: #9ad8d0;
+    --tok-fn: #ffe3ab;
+    --tok-bi: #f0b878;
+    --tok-var: #e6d6b8;
+    --tok-op: #c2ac86;
+    --tok-pun: #a8a8ab;
+    --tok-tag: #ffc457;
+    --tok-atr: #cfe0a5;
+    --tok-cst: #9ad8d0;
+    --tok-met: #dcb6e0;
+    --tok-err: #ff9a8a;
+    --tok-ok: #9fdc8a;
+    --tok-pmt: #ffb02e;
+    --tok-out: #c0ad8e;
+  }
+
+  /* ======================================================================
+     ICE (cyan)
+     text  #cfe7f5  15.69:1 on --bg, 13.61:1 on the lightest surface
+     muted #82a3b6   7.52:1 on --bg,  6.53:1 on the lightest surface
+     accent #3ce0ff 12.72:1 on --bg
+     border-ui #436d84 3.60:1 on --bg, 3.12:1 on the lightest surface
+     ====================================================================== */
+  [data-theme="ice"] {
+    --bg: #04080c;
+    --bg-alt: #070d12;
+    --surface: #0b131a;
+    --surface-2: #111b23;
+    --code-bg: #070c11;
+    --scrim: rgb(2 5 8 / 78%);
+
+    --text: #cfe7f5;
+    --text-muted: #82a3b6;
+    --text-strong: #e9f7ff;
+    --text-invert: #041520;
+
+    --accent: #3ce0ff;
+    --accent-2: #6ec8f0;
+    --accent-dim: #1c7c99;
+    --accent-rgb: 60 224 255;
+    --bg-rgb: 4 8 12;
+
+    --link: #7ae6ff;
+    --link-visited: #a9cfe0;
+
+    --border-soft: #12222c;
+    --border: #1b303c;
+    --border-ui: #436d84;
+    --focus: #96f0ff;
+
+    --selection-bg: rgb(60 224 255 / 26%);
+    --selection-fg: #eafaff;
+
+    --tok-com: #7f96a5;
+    --tok-kw: #6fe4ff;
+    --tok-str: #b9e6c8;
+    --tok-num: #ffc98a;
+    --tok-fn: #cfeeff;
+    --tok-bi: #6ec8f0;
+    --tok-var: #d5e6f0;
+    --tok-op: #a9c2d2;
+    --tok-pun: #90a9ba;
+    --tok-tag: #6fe4ff;
+    --tok-atr: #b9e6c8;
+    --tok-cst: #c9b6ee;
+    --tok-met: #c9b6ee;
+    --tok-err: #ff8a8a;
+    --tok-ok: #7fe0a8;
+    --tok-pmt: #3ce0ff;
+    --tok-out: #a6bece;
+  }
+
+  /* ======================================================================
+     REDTEAM
+     text  #f0d6d8  14.69:1 on --bg, 13.33:1 on the lightest surface
+     muted #b28a8d   6.63:1 on --bg,  6.02:1 on the lightest surface
+     accent #ff5a68  6.63:1 on --bg — the lowest accent of the four, which is
+       why redteam never uses the raw accent for anything smaller than a chip
+       label; running text and links use --link instead.
+     border-ui #915a62 3.68:1 on --bg, 3.34:1 on the lightest surface
+     ====================================================================== */
+  [data-theme="redteam"] {
+    --bg: #0a0609;
+    --bg-alt: #0e090c;
+    --surface: #150d11;
+    --surface-2: #1c1218;
+    --code-bg: #0d0709;
+    --scrim: rgb(6 3 4 / 78%);
+
+    --text: #f0d6d8;
+    --text-muted: #b28a8d;
+    --text-strong: #ffecec;
+    --text-invert: #1a0407;
+
+    --accent: #ff5a68;
+    --accent-2: #ff9aa6;
+    --accent-dim: #8e2733;
+    --accent-rgb: 255 90 104;
+    --bg-rgb: 10 6 9;
+
+    --link: #ff8f9a;
+    --link-visited: #d9a6ab;
+
+    --border-soft: #281319;
+    --border: #3a1c23;
+    --border-ui: #915a62;
+    --focus: #ffb0b8;
+
+    --selection-bg: rgb(255 90 104 / 26%);
+    --selection-fg: #fff0f1;
+
+    --tok-com: #a1878a;
+    --tok-kw: #ff7f8c;
+    --tok-str: #e8c9a0;
+    --tok-num: #f2adc4;
+    --tok-fn: #ffd0d4;
+    --tok-bi: #ff9aa6;
+    --tok-var: #e6cccd;
+    --tok-op: #c9a8ab;
+    --tok-pun: #b19497;
+    --tok-tag: #ff7f8c;
+    --tok-atr: #e8c9a0;
+    --tok-cst: #d8b0e8;
+    --tok-met: #d8b0e8;
+    --tok-err: #ff8a8a;
+    --tok-ok: #8fdca6;
+    --tok-pmt: #ff5a68;
+    --tok-out: #b9a0a2;
+  }
+
+  /* ======================================================================
+     Derived tokens — one place where a component can ask for a
+     surface tinted with the current accent without knowing which theme is
+     live.
+     color-mix() is the mechanism; the declaration order gives browsers
+     without it a plain surface instead of a transparent hole.
+     ====================================================================== */
+  :root {
+    --glow-sm: 0 0 0.35em rgb(var(--accent-rgb) / 30%);
+    --glow-md: 0 0 0.8em rgb(var(--accent-rgb) / 26%);
+    --glow-text: 0 0 0.5em rgb(var(--accent-rgb) / 22%);
+    --ring: 0 0 0 var(--focus-w) var(--focus);
+  }
+
+  @supports (background: color-mix(in srgb, red 10%, blue)) {
+    :root {
+      --accent-tint: color-mix(in srgb, var(--accent) var(--tint-weak), var(--surface));
+      --accent-tint-strong: color-mix(in srgb, var(--accent) var(--tint), var(--surface));
+    }
+  }
+
+  /* ======================================================================
+     prefers-contrast: more — push text to the strong ramp, make every
+     border a real 4.5:1 line, and drop the phosphor bloom entirely, since
+     glow is the first thing that hurts when a reader has asked for
+     maximum edge definition.
+     ====================================================================== */
+  @media (prefers-contrast: more) {
+    :root {
+      --text: var(--text-strong);
+      --text-muted: var(--text);
+      --border-soft: var(--border-ui);
+      --border: var(--border-ui);
+      --glow-sm: none;
+      --glow-md: none;
+      --glow-text: none;
+      --focus-w: 3px;
+    }
+    [data-theme="phosphor"] {
+      --border-ui: #86b7a1;
+      --link: #9dffcd;
+    }
+    [data-theme="amber"] {
+      --border-ui: #c0a071;
+      --link: #ffd88f;
+    }
+    [data-theme="ice"] {
+      --border-ui: #8fb6cc;
+      --link: #a6efff;
+    }
+    [data-theme="redteam"] {
+      --border-ui: #d4979d;
+      --link: #ffb8bf;
+    }
+  }
+}

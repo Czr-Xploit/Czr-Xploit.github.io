@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap wrap-narrow error-page">
+
+  <p class="error-code glitch" data-text="404" aria-hidden="true">404</p>
+
+  <h1 class="page-title">{{ t.notfound_title }}</h1>
+  <p class="page-intro">{{ t.notfound_body }}</p>
+
+  <figure class="terminal-block error-term">
+    <div class="terminal-chrome" aria-hidden="true">
+      <span class="dot dot-r"></span><span class="dot dot-y"></span><span class="dot dot-g"></span>
+      <span class="terminal-title">czrxplo1t@czr</span>
+    </div>
+    <pre class="code terminal"><code><span class="code-lines"><span class="ln"><span class="tok tok-pmt">czrxplo1t@czr:~$ </span><span class="tok tok-bi">curl</span> -sI <span class="tok tok-str">"$REQUESTED_URL"</span></span>
+<span class="ln"><span class="tok tok-out">HTTP/2 404</span></span>
+<span class="ln"><span class="tok tok-out">server: github.com</span></span>
+<span class="ln"><span class="tok tok-out">x-reason: no such route</span></span>
+<span class="ln"><span class="tok tok-pmt">czrxplo1t@czr:~$ </span><span class="tok tok-bi">cd</span> /</span></code></span></pre>
+  </figure>
+
+  <p class="error-actions">
+    <a class="btn btn-primary" href="{{ home_url }}"><span aria-hidden="true">&gt;</span> {{ t.notfound_home }}</a>
+    <button type="button" class="btn" data-action="open-palette"><span aria-hidden="true">⌕</span> {{ t.search_title }}</button>
+  </p>
+
+</div>
+
+{% endblock %}

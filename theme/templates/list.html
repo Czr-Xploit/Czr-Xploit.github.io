@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="wrap">
+
+  <header class="page-head">
+    <p class="breadcrumb" aria-hidden="true"><span class="prompt">$</span> ls -la ./{{ page.section }}/</p>
+    <h1 class="page-title glitch" data-text="{{ listing.title }}">{{ listing.title }}</h1>
+    {% if listing.intro %}<p class="page-intro">{{ listing.intro }}</p>{% endif %}
+    <p class="page-count">{{ listing.total }} {% if listing.kind == 'writeup' %}{{ t.stats_writeups }}{% else %}{{ t.stats_posts }}{% endif %}</p>
+  </header>
+
+  {% if facets.tags %}
+  <section class="filters" aria-label="{{ t.tags_title }}">
+    <div class="filter-row">
+      <label class="filter-label" for="filter-query">
+        <span class="prompt" aria-hidden="true">grep</span>
+        <span class="sr-only">{{ t.search_placeholder }}</span>
+      </label>
+      <input type="search" id="filter-query" class="filter-input" data-filter="query"
+             placeholder="{{ t.search_placeholder }}" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="filter-row filter-chips" role="group" aria-label="{{ t.tags_title }}">
+      <button type="button" class="chip chip-filter is-active" data-filter="tag" data-value="">all</button>
+      {% for tag in facets.tags | slice:0,24 %}
+      <button type="button" class="chip chip-filter" data-filter="tag" data-value="{{ tag }}">#{{ tag }}</button>
+      {% endfor %}
+    </div>
+
+    {% if facets.difficulties %}
+    <div class="filter-row filter-chips" role="group" aria-label="{{ t.difficulty }}">
+      <button type="button" class="chip chip-filter is-active" data-filter="difficulty" data-value="">{{ t.difficulty }}: all</button>
+      {% for value in facets.difficulties %}
+      <button type="button" class="chip chip-filter" data-filter="difficulty" data-value="{{ value }}">{{ value }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if facets.platforms %}
+    <div class="filter-row filter-chips" role="group" aria-label="{{ t.platform }}">
+      <button type="button" class="chip chip-filter is-active" data-filter="platform" data-value="">{{ t.platform }}: all</button>
+      {% for value in facets.platforms %}
+      <button type="button" class="chip chip-filter" data-filter="platform" data-value="{{ value }}">{{ value }}</button>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <p class="filter-status" id="filter-status" role="status" aria-live="polite"></p>
+  </section>
+  {% endif %}
+
+  {# Cards carry an h3. Without this the outline jumps h1 -> h3, which screen
+     reader users navigate by. It is visually hidden, not decorative. #}
+  <h2 class="sr-only">{{ listing.title }}</h2>
+
+  <div class="grid grid-cards" id="listing-grid">
+    {% for item in listing.documents %}{% include "card.html" %}
+    {% empty %}<p class="empty">{{ t.empty_list }}</p>{% endfor %}
+  </div>
+
+  {% if pagination.total > 1 %}
+  <nav class="pagination" aria-label="{{ t.page }}">
+    {% if pagination.has_previous %}
+    <a class="pagination-link" href="{{ pagination.previous_url }}" rel="prev">
+      <span aria-hidden="true">←</span> {{ t.page_previous }}
+    </a>
+    {% endif %}
+    <span class="pagination-status">{{ t.page }} {{ pagination.current }} {{ t.page_of }} {{ pagination.total }}</span>
+    {% if pagination.has_next %}
+    <a class="pagination-link" href="{{ pagination.next_url }}" rel="next">
+      {{ t.page_next }} <span aria-hidden="true">→</span>
+    </a>
+    {% endif %}
+  </nav>
+  {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,530 @@
+/* ==========================================================================
+   effects.css — matrix canvas layer, scanlines, vignette, glitch, glow,
+   caret, typewriter, motion policy, print
+   ==========================================================================
+   Budget: one focal effect per viewport.  The matrix canvas is the focal
+   effect on every page, so the glitch treatment runs continuously on exactly
+   two elements (the home hero title and the 404 code) and is hover-only
+   everywhere else.  Everything animated here moves transform, opacity or
+   filter and nothing else.
+   ========================================================================== */
+
+@layer effects {
+
+  /* ======================================================================
+     Fixed effect layer
+     ======================================================================
+     `.page` (which is <body>) is a stacking context, so a z-index of -1 here
+     paints after the body background and before every in-flow child — the
+     layer sits under the content without needing a positive z-index on
+     anything else.  It never takes a pointer event and is aria-hidden in the
+     markup, so it is invisible to assistive tech as well. */
+
+  .fx-layer {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    overflow: hidden;
+    contain: strict;
+  }
+
+  .fx-matrix {
+    display: block;
+    width: 100%;
+    height: 100%;
+    opacity: 0.26;
+    /* The canvas is repainted by script every frame; this is the one element
+       in the bundle that legitimately owns will-change. */
+    will-change: opacity;
+  }
+
+  /* Scanlines are a static gradient, not an animation.  A moving scanline
+     costs a full-viewport repaint per frame for an effect nobody can name
+     afterwards, and animating background-position is explicitly off the
+     table. */
+  .fx-scanlines {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgb(0 0 0 / 0%) 0 2px,
+      rgb(0 0 0 / 26%) 2px 3px
+    );
+    opacity: 0.55;
+  }
+
+  .fx-vignette {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(var(--bg-rgb) / 55%) 78%, rgb(var(--bg-rgb) / 92%) 100%);
+  }
+
+  /* Hard off switch. The theme boot script sets data-motion=off on the root
+     element when the reader has opted out; the layer is removed from the render tree
+     entirely rather than merely made transparent, so the canvas script can
+     also see it is gone and stop drawing. */
+  [data-motion="off"] .fx-layer {
+    display: none;
+  }
+
+  /* ======================================================================
+     Glow utilities
+     ====================================================================== */
+
+  .glow {
+    text-shadow: var(--glow-text);
+  }
+
+  .glow-box {
+    box-shadow: var(--glow-md);
+  }
+
+  /* ======================================================================
+     Caret / cursor
+     ====================================================================== */
+
+  .caret,
+  .brand-cursor {
+    display: inline-block;
+    color: var(--accent);
+  }
+
+  .caret {
+    width: 0.6em;
+    height: 1.05em;
+    vertical-align: text-bottom;
+    background: var(--accent);
+    box-shadow: var(--glow-sm);
+  }
+
+  /* 1.15s per cycle is under one blink per second — comfortably below the
+     three-flashes-per-second photosensitivity threshold, and it matches the
+     cadence of a real VT terminal rather than a strobe. */
+  @media (prefers-reduced-motion: no-preference) {
+    .caret {
+      animation: caret-blink 1.15s steps(1, end) infinite;
+    }
+
+    .brand-cursor {
+      animation: caret-blink 1.6s steps(1, end) infinite;
+    }
+  }
+
+  @keyframes caret-blink {
+    0%, 55% { opacity: 1; }
+    56%, 100% { opacity: 0.08; }
+  }
+
+  /* ======================================================================
+     Typewriter
+     ======================================================================
+     The script fills [data-typewriter] one character at a time.  CSS only
+     has to stop the line from collapsing while it is empty and stop it from
+     reflowing the block as it grows. */
+
+  .hero-prompt {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--sp-2);
+    font-size: var(--fs-sm);
+    letter-spacing: var(--tracking-wide);
+    min-height: 1.6em;
+  }
+
+  .hero-cmd,
+  [data-typewriter] {
+    color: var(--text);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ======================================================================
+     Glitch
+     ======================================================================
+     Two pseudo-elements read the same string from data-text and are offset
+     in opposite directions with a coloured tint, which is the RGB-split look
+     without compositing three copies of the element.  Driven by transform
+     and clip-path only.  Each cycle has four discrete state changes spread
+     over 5.2s — roughly 0.8 changes per second, an order of magnitude under
+     the photosensitivity limit.
+
+     Note: the duplicated text lives in generated content.  Screen readers
+     that expose ::before/::after content will read the heading twice; that
+     is the known cost of the technique and is why it is only applied to two
+     short strings on the whole site. */
+
+  .glitch {
+    position: relative;
+    display: inline-block;
+    isolation: isolate;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Inherit every metric so the copies register exactly on the original. */
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: pre;
+    opacity: 0;
+  }
+
+  .glitch::before {
+    color: var(--accent);
+    z-index: -1;
+  }
+
+  .glitch::after {
+    color: var(--c-note);
+    z-index: -2;
+  }
+
+  /* Only the two focal instances animate on their own. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-title.glitch::before,
+    .error-code.glitch::before {
+      opacity: 0.85;
+      animation: glitch-shift-a 5.2s steps(1, end) infinite;
+    }
+
+    .hero-title.glitch::after,
+    .error-code.glitch::after {
+      opacity: 0.7;
+      animation: glitch-shift-b 5.2s steps(1, end) infinite;
+    }
+
+    /* Everywhere else the split is a hover/focus affordance, which keeps the
+       viewport to a single moving thing at a time. */
+    @media (hover: hover) {
+      .brand:hover .glitch::before,
+      .brand:focus-visible .glitch::before,
+      .page-title.glitch:hover::before {
+        opacity: 0.8;
+        animation: glitch-shift-a 900ms steps(1, end) 2;
+      }
+
+      .brand:hover .glitch::after,
+      .brand:focus-visible .glitch::after,
+      .page-title.glitch:hover::after {
+        opacity: 0.65;
+        animation: glitch-shift-b 900ms steps(1, end) 2;
+      }
+    }
+  }
+
+  @keyframes glitch-shift-a {
+    0%, 86% {
+      transform: translate3d(0, 0, 0);
+      clip-path: inset(0 0 0 0);
+    }
+    88% {
+      transform: translate3d(-2px, 1px, 0);
+      clip-path: inset(12% 0 62% 0);
+    }
+    92% {
+      transform: translate3d(3px, -1px, 0);
+      clip-path: inset(58% 0 18% 0);
+    }
+    96% {
+      transform: translate3d(-1px, 0, 0);
+      clip-path: inset(32% 0 44% 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  @keyframes glitch-shift-b {
+    0%, 86% {
+      transform: translate3d(0, 0, 0);
+      clip-path: inset(0 0 0 0);
+    }
+    88% {
+      transform: translate3d(2px, -1px, 0);
+      clip-path: inset(64% 0 8% 0);
+    }
+    92% {
+      transform: translate3d(-3px, 1px, 0);
+      clip-path: inset(16% 0 56% 0);
+    }
+    96% {
+      transform: translate3d(1px, 0, 0);
+      clip-path: inset(46% 0 30% 0);
+    }
+    100% {
+      transform: translate3d(0, 0, 0);
+      clip-path: inset(0 0 0 0);
+    }
+  }
+
+  /* ======================================================================
+     Entrance / state transitions
+     ====================================================================== */
+
+  @media (prefers-reduced-motion: no-preference) {
+    .palette:not([hidden]) .palette-panel,
+    .term:not([hidden]) .term-panel {
+      animation: panel-in var(--dur-3) var(--ease-out) both;
+    }
+  }
+
+  @keyframes panel-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, -0.75rem, 0) scale(0.99);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  /* ======================================================================
+     Motion policy
+     ======================================================================
+     Two switches, one behaviour: the OS preference and the site own
+     data-motion=off flag.
+
+     `!important` is unavoidable here and nowhere else in the bundle.  The
+     rule has to defeat every animation and transition declared anywhere,
+     including declarations with higher specificity in earlier layers — and
+     because layer order makes later layers WIN, a plain declaration in the
+     effects layer still loses to a more specific selector inside the same
+     layer.  A universal selector with `!important` is the only construct
+     that reliably neutralises the whole bundle; scroll-behavior is included
+     because smooth scrolling is vestibular motion too.
+
+     Durations are 0.01ms rather than 0 so that `animationend`/
+     `transitionend` listeners still fire and no script waits forever on an
+     event that never arrives. */
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-delay: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-delay: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+
+    .fx-layer {
+      display: none;
+    }
+
+    /* The glitch copies must not merely stop moving — they must not be
+       visible at all, or the heading is left permanently double-struck. */
+    .glitch::before,
+    .glitch::after {
+      opacity: 0 !important;
+      animation: none !important;
+      transform: none !important;
+    }
+
+    .caret,
+    .brand-cursor {
+      animation: none !important;
+      opacity: 1;
+    }
+
+    .link-arrow span,
+    .btn,
+    .card,
+    .nav-toggle-bar {
+      transition: none !important;
+    }
+
+    .btn:hover,
+    .card:hover {
+      transform: none !important;
+    }
+  }
+
+  [data-motion="off"] *,
+  [data-motion="off"] *::before,
+  [data-motion="off"] *::after {
+    animation-delay: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  [data-motion="off"] .glitch::before,
+  [data-motion="off"] .glitch::after {
+    opacity: 0 !important;
+    animation: none !important;
+  }
+
+  [data-motion="off"] .caret,
+  [data-motion="off"] .brand-cursor {
+    animation: none !important;
+    opacity: 1;
+  }
+
+  /* prefers-contrast: more strips the bloom in tokens.css; the decorative
+     overlays go with it, because a scanline grid is exactly the kind of
+     low-contrast texture that makes glyph edges harder to resolve. */
+  @media (prefers-contrast: more) {
+    .fx-scanlines,
+    .fx-vignette {
+      display: none;
+    }
+
+    .fx-matrix {
+      opacity: 0.1;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      display: none;
+    }
+  }
+
+  /* ======================================================================
+     Print
+     ======================================================================
+     Retheme through the tokens rather than per component: one block of
+     custom properties turns the whole bundle into black-on-white, and only
+     the genuinely screen-only furniture needs an explicit rule. */
+
+  @media print {
+    :root {
+      --bg: #fff;
+      --bg-alt: #fff;
+      --surface: #fff;
+      --surface-2: #fff;
+      --code-bg: #fff;
+      --text: #000;
+      --text-strong: #000;
+      --text-muted: #333;
+      --accent: #000;
+      --accent-2: #333;
+      --accent-dim: #666;
+      --link: #000;
+      --link-visited: #000;
+      --border: #999;
+      --border-soft: #ccc;
+      --border-ui: #666;
+      --glow-sm: none;
+      --glow-md: none;
+      --glow-text: none;
+      --selection-bg: transparent;
+      --tok-com: #555;
+      --tok-kw: #000;
+      --tok-str: #333;
+      --tok-num: #333;
+      --tok-fn: #000;
+      --tok-bi: #000;
+      --tok-var: #333;
+      --tok-op: #333;
+      --tok-pun: #555;
+      --tok-tag: #000;
+      --tok-atr: #333;
+      --tok-cst: #333;
+      --tok-met: #555;
+      --tok-err: #000;
+      --tok-ok: #000;
+      --tok-pmt: #000;
+      --tok-out: #333;
+    }
+
+    .fx-layer,
+    .site-header,
+    .nav,
+    .palette,
+    .term,
+    .toast,
+    .progress,
+    .toc,
+    .filters,
+    .pagination,
+    .post-nav,
+    .related,
+    .code-copy,
+    .gif-toggle,
+    .heading-anchor,
+    .skip-link,
+    .lang-switch,
+    .nav-tools,
+    .hero-actions,
+    .error-actions {
+      display: none;
+    }
+
+    html,
+    body {
+      background: #fff;
+      color: #000;
+    }
+
+    body {
+      font-size: 11pt;
+    }
+
+    .main {
+      padding: 0;
+    }
+
+    .article-layout {
+      display: block;
+    }
+
+    .prose {
+      max-width: none;
+    }
+
+    /* Reveal destinations: a printed link with no URL is a dead end. */
+    .prose a[href^="http"]::after,
+    .footnote-item a[href^="http"]::after {
+      content: " <" attr(href) ">";
+      font-size: 9pt;
+      word-break: break-all;
+    }
+
+    .prose a {
+      text-decoration: underline;
+    }
+
+    .spoiler[open] .spoiler-body,
+    .spoiler .spoiler-body {
+      display: block;
+    }
+
+    .code-block,
+    .terminal-block,
+    .table-wrap,
+    .callout,
+    figure,
+    pre.code {
+      border: 1px solid #999;
+      break-inside: avoid;
+      overflow: visible;
+    }
+
+    .ln {
+      white-space: pre-wrap;
+      width: auto;
+    }
+
+    .heading,
+    .section-title {
+      break-after: avoid;
+      border-bottom: 0;
+    }
+
+    .site-footer {
+      border-top: 1px solid #999;
+      padding-top: 8pt;
+    }
+  }
+}

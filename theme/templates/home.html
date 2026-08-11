@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="hero" aria-labelledby="hero-title">
+  <div class="wrap hero-inner">
+
+    <p class="hero-prompt" aria-hidden="true">
+      <span class="prompt">root@{{ site.handle | lower }}:~#</span>
+      <span class="hero-cmd" data-typewriter="whoami; cat ./mission.txt"></span>
+      <span class="caret"></span>
+    </p>
+
+    <h1 class="hero-title glitch" id="hero-title" data-text="{{ site.handle }}">{{ site.handle }}</h1>
+
+    <p class="hero-tagline">{{ site.tagline[lang] }}</p>
+    <p class="hero-desc">{{ site.description[lang] }}</p>
+
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="{{ page.blog_url }}">
+        <span aria-hidden="true">&gt;</span> {{ t.all_posts }}
+      </a>
+      <a class="btn" href="{{ page.writeups_url }}">
+        <span aria-hidden="true">&gt;</span> {{ t.all_writeups }}
+      </a>
+      <button type="button" class="btn btn-ghost" data-action="open-terminal">
+        <span aria-hidden="true">&gt;_</span> {{ t.terminal_open }}
+      </button>
+    </div>
+
+    <dl class="hero-stats">
+      <div class="stat"><dt>{{ t.stats_posts }}</dt><dd data-count="{{ stats.posts }}">{{ stats.posts }}</dd></div>
+      <div class="stat"><dt>{{ t.stats_writeups }}</dt><dd data-count="{{ stats.writeups }}">{{ stats.writeups }}</dd></div>
+      <div class="stat"><dt>{{ t.stats_tools }}</dt><dd data-count="{{ stats.tools }}">{{ stats.tools }}</dd></div>
+      <div class="stat"><dt>{{ t.stats_words }}</dt><dd data-count="{{ stats.words }}">{{ stats.words | number }}</dd></div>
+    </dl>
+
+  </div>
+</section>
+
+{% if featured %}
+<section class="section section-featured" aria-labelledby="featured-title">
+  <div class="wrap">
+    <h2 class="section-title" id="featured-title">
+      <span class="section-marker" aria-hidden="true">##</span> {{ t.featured }}
+    </h2>
+    <div class="grid grid-featured">
+      {% for item in featured %}{% include "card.html" %}{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section" aria-labelledby="latest-title">
+  <div class="wrap">
+    <h2 class="section-title" id="latest-title">
+      <span class="section-marker" aria-hidden="true">##</span> {{ t.latest }}
+    </h2>
+    <div class="grid grid-cards">
+      {% for item in latest %}{% include "card.html" %}
+      {% empty %}<p class="empty">{{ t.empty_list }}</p>{% endfor %}
+    </div>
+    <p class="section-more"><a class="link-arrow" href="{{ page.blog_url }}">{{ t.all_posts }} <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+{% if recent_writeups %}
+<section class="section section-alt" aria-labelledby="writeups-title">
+  <div class="wrap">
+    <h2 class="section-title" id="writeups-title">
+      <span class="section-marker" aria-hidden="true">##</span> {{ t.writeups_title }}
+    </h2>
+    <div class="grid grid-cards">
+      {% for item in recent_writeups %}{% include "card.html" %}{% endfor %}
+    </div>
+    <p class="section-more"><a class="link-arrow" href="{{ page.writeups_url }}">{{ t.all_writeups }} <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+{% endif %}
+
+{% if top_tags %}
+<section class="section" aria-labelledby="tags-title">
+  <div class="wrap">
+    <h2 class="section-title" id="tags-title">
+      <span class="section-marker" aria-hidden="true">##</span> {{ t.tags_title }}
+    </h2>
+    <ul class="tag-cloud">
+      {% for tag in top_tags %}
+      <li><a class="tag tag-link" href="{{ page.tags_url }}{{ tag.key }}/" data-count="{{ tag.count }}">#{{ tag.name }}<span class="tag-count">{{ tag.count }}</span></a></li>
+      {% endfor %}
+    </ul>
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}
