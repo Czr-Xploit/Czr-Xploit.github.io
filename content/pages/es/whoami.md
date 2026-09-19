@@ -101,4 +101,3 @@ huellas están en la [página de contacto](/contacto/).
 Para reportarme algo sobre este sitio en concreto, el canal formal está en
 [`/.well-known/security.txt`](/.well-known/security.txt).
 
-<!-- TODO CzrXplo1t: sustituir la huella PGP en site.json y subir la clave a theme/static/pgp/ -->

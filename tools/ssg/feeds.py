@@ -136,7 +136,7 @@ def render_rss(config, documents: Sequence[Document], *, lang: str, feed_url: st
         f"<description>{_xml_text(description)}</description>"
         f"<language>{_xml_text(language.locale)}</language>"
         f"<lastBuildDate>{built}</lastBuildDate>"
-        f"<generator>czrxplo1t-ssg</generator>"
+        
         f'<atom:link href="{_xml_text(config.absolute(feed_url))}" rel="self" type="application/rss+xml" />'
         f"{''.join(items)}"
         "</channel>\n</rss>\n"
@@ -183,7 +183,7 @@ def render_atom(config, documents: Sequence[Document], *, lang: str, feed_url: s
         f"<author><name>{_xml_text(config.author)}</name>"
         + (f"<uri>{_xml_text(config.base_url)}</uri>" if config.base_url else "")
         + "</author>"
-        f"<generator>czrxplo1t-ssg</generator>"
+        
         f"{''.join(entries)}"
         "</feed>\n"
     )

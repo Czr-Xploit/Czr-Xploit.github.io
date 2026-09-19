@@ -103,4 +103,3 @@ fingerprints are on the [contact page](/en/contact/).
 To report something about this site specifically, the formal channel is
 [`/.well-known/security.txt`](/.well-known/security.txt).
 
-<!-- TODO CzrXplo1t: replace the PGP fingerprint in site.json and upload the key to theme/static/pgp/ -->

@@ -46,7 +46,6 @@ controls the site controls the key. Check the fingerprint through a second,
 independent channel before trusting it for anything serious.
 :::
 
-<!-- TODO CzrXplo1t: publish the key at theme/static/pgp/czrxplo1t.asc and put the real fingerprint in site.json -->
 
 ## Responsible disclosure
 

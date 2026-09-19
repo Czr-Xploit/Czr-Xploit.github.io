@@ -46,7 +46,6 @@ quien controle el sitio controla la clave. Contrasta la huella por un segundo ca
 independiente antes de confiar en ella para algo serio.
 :::
 
-<!-- TODO CzrXplo1t: publicar la clave en theme/static/pgp/czrxplo1t.asc y poner la huella real en site.json -->
 
 ## Divulgación responsable
 
