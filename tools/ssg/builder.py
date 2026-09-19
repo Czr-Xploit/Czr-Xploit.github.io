@@ -301,6 +301,7 @@ class Builder:
 
         self._build_404()
         self._build_root_files()
+        self._copy_admin()
 
         self.result.assets = self.assets.report.copied
         self.result.budget_problems = self.assets.budget_violations()
@@ -762,6 +763,13 @@ class Builder:
         if config.base_url and "github.io" not in config.base_url:
             host = config.base_url.split("://", 1)[-1].strip("/")
             self.assets.write("/CNAME", host + "\n", record=False)
+
+    def _copy_admin(self) -> None:
+        source = os.path.join(self.config.source_root, "admin")
+        if not os.path.isdir(source):
+            return
+        target = os.path.join(self.config.output_path, "admin")
+        shutil.copytree(source, target)
 
     # -- reporting -------------------------------------------------------- #
 

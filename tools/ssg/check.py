@@ -48,10 +48,13 @@ class Finding:
 # Helpers
 # --------------------------------------------------------------------------- #
 
+_SKIP_DIRS = {"admin"}
+
+
 def _walk(root: str, suffixes: tuple[str, ...]) -> list[str]:
     found: list[str] = []
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = sorted(dirnames)
+        dirnames[:] = sorted(name for name in dirnames if name not in _SKIP_DIRS)
         for filename in sorted(filenames):
             if filename.endswith(suffixes):
                 found.append(os.path.join(dirpath, filename))

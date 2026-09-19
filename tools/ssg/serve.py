@@ -108,9 +108,12 @@ class _Handler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self) -> None:
         # Mirror what a properly configured host would send. GitHub Pages
         # cannot set these, which is why the site also carries a CSP meta tag.
-        if self.csp:
+        # The admin panel loads third-party CMS scripts, so it gets no
+        # restrictive headers — it is author-only, not public content.
+        is_admin = self.path.startswith("/admin")
+        if self.csp and not is_admin:
             self.send_header("Content-Security-Policy", self.csp)
-        if self.permissions_policy:
+        if self.permissions_policy and not is_admin:
             self.send_header("Permissions-Policy", self.permissions_policy)
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")

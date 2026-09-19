@@ -1,0 +1,612 @@
+# =============================================================================
+# Sveltia CMS — configuracion para CzrXplo1t
+# =============================================================================
+#
+# SETUP (una sola vez):
+#
+#   1. Crea una GitHub OAuth App:
+#      https://github.com/settings/developers  >  New OAuth App
+#
+#      - Application name:    CzrXplo1t CMS
+#      - Homepage URL:        https://czr-xploit.github.io
+#      - Callback URL:        https://czr-xploit.github.io/admin/
+#
+#      Copia el Client ID (NO necesitas Client Secret para PKCE, pero si para
+#      el proxy OAuth — ver paso 2).
+#
+#   2. Despliega sveltia-cms-auth en Cloudflare Workers (gratis):
+#      https://github.com/sveltia/sveltia-cms-auth
+#
+#      Necesitas el Client ID y Client Secret del paso 1.
+#      El worker se despliega en ~5 minutos y te da una URL tipo:
+#      https://tu-worker.tu-cuenta.workers.dev
+#
+#   3. Pon esa URL abajo en base_url.
+#
+# =============================================================================
+
+backend:
+  name: github
+  repo: Czr-Xploit/Czr-Xploit.github.io
+  branch: main
+  # Pon aqui la URL de tu Cloudflare Worker (sveltia-cms-auth)
+  base_url: https://CAMBIA-ESTO.workers.dev
+  auth_endpoint: oauth
+
+# Donde se guardan las imagenes subidas desde el CMS
+media_folder: "theme/static/media"
+public_folder: "/static/media"
+
+slug:
+  encoding: ascii
+  clean_accents: true
+  sanitize_replacement: "-"
+
+# =============================================================================
+# Colecciones
+# =============================================================================
+
+collections:
+
+  # ---------------------------------------------------------------------------
+  # Articulos de investigacion — Espanol
+  # ---------------------------------------------------------------------------
+  - name: posts-es
+    label: "Articulos (ES)"
+    label_singular: "Articulo (ES)"
+    folder: "content/posts/es"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [date, title]
+    summary: "{{title}}  —  {{date}}"
+    view_filters:
+      - { label: "Destacados", field: featured, pattern: true }
+      - { label: "Borradores", field: draft, pattern: true }
+    fields:
+      - label: "Titulo"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+        pattern: ['^[a-z0-9][a-z0-9-]*[a-z0-9]$', "Solo minusculas, numeros y guiones"]
+      - label: "Idioma"
+        name: lang
+        widget: hidden
+        default: "es"
+      - label: "Clave de traduccion"
+        name: translation_key
+        widget: string
+        required: true
+        hint: "Usa la misma clave en la version EN para enlazar ambos articulos"
+      - label: "Tipo"
+        name: type
+        widget: hidden
+        default: "research"
+      - label: "Fecha"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Actualizado"
+        name: updated
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: "Destacado"
+        name: featured
+        widget: boolean
+        default: false
+      - label: "Fijado"
+        name: pinned
+        widget: boolean
+        default: false
+      - label: "Borrador"
+        name: draft
+        widget: boolean
+        default: false
+      - label: "Resumen"
+        name: summary
+        widget: text
+        required: true
+        hint: "1-2 frases. Aparece en listados, feed y tarjeta social."
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Portada"
+        name: cover
+        widget: image
+        required: false
+      - label: "Alt de portada"
+        name: cover_alt
+        widget: string
+        required: false
+      - label: "Tabla de contenidos"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Contenido"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Articulos de investigacion — English
+  # ---------------------------------------------------------------------------
+  - name: posts-en
+    label: "Posts (EN)"
+    label_singular: "Post (EN)"
+    folder: "content/posts/en"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [date, title]
+    summary: "{{title}}  —  {{date}}"
+    view_filters:
+      - { label: "Featured", field: featured, pattern: true }
+      - { label: "Drafts", field: draft, pattern: true }
+    fields:
+      - label: "Title"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+        pattern: ['^[a-z0-9][a-z0-9-]*[a-z0-9]$', "Lowercase, numbers and hyphens only"]
+      - label: "Language"
+        name: lang
+        widget: hidden
+        default: "en"
+      - label: "Translation key"
+        name: translation_key
+        widget: string
+        required: true
+        hint: "Use the same key as the ES version to link both articles"
+      - label: "Type"
+        name: type
+        widget: hidden
+        default: "research"
+      - label: "Date"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Updated"
+        name: updated
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: "Featured"
+        name: featured
+        widget: boolean
+        default: false
+      - label: "Pinned"
+        name: pinned
+        widget: boolean
+        default: false
+      - label: "Draft"
+        name: draft
+        widget: boolean
+        default: false
+      - label: "Summary"
+        name: summary
+        widget: text
+        required: true
+        hint: "1-2 sentences. Used in listings, feed and social card."
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Cover"
+        name: cover
+        widget: image
+        required: false
+      - label: "Cover alt"
+        name: cover_alt
+        widget: string
+        required: false
+      - label: "Table of contents"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Content"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Writeups — Espanol
+  # ---------------------------------------------------------------------------
+  - name: writeups-es
+    label: "Writeups (ES)"
+    label_singular: "Writeup (ES)"
+    folder: "content/writeups/es"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [date, title, difficulty]
+    summary: "{{title}}  —  {{platform}} / {{difficulty}}"
+    view_filters:
+      - { label: "Borradores", field: draft, pattern: true }
+    fields:
+      - label: "Titulo"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+        pattern: ['^[a-z0-9][a-z0-9-]*[a-z0-9]$', "Solo minusculas, numeros y guiones"]
+      - label: "Idioma"
+        name: lang
+        widget: hidden
+        default: "es"
+      - label: "Clave de traduccion"
+        name: translation_key
+        widget: string
+        required: true
+      - label: "Tipo"
+        name: type
+        widget: hidden
+        default: "writeup"
+      - label: "Fecha"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Plataforma"
+        name: platform
+        widget: string
+        required: false
+        hint: "HackTheBox, TryHackMe, OWASP, VulnHub..."
+      - label: "Dificultad"
+        name: difficulty
+        widget: select
+        options: ["Facil", "Media", "Dificil", "Insane"]
+        required: false
+      - label: "Sistema operativo"
+        name: os
+        widget: string
+        required: false
+        hint: "Linux, Windows, Docker..."
+      - label: "Tecnicas"
+        name: techniques
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "Tecnica", name: technique, widget: string }
+      - label: "CVE"
+        name: cve
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "CVE", name: cve, widget: string }
+      - label: "Borrador"
+        name: draft
+        widget: boolean
+        default: false
+      - label: "Resumen"
+        name: summary
+        widget: text
+        required: true
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Portada"
+        name: cover
+        widget: image
+        required: false
+      - label: "Tabla de contenidos"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Contenido"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Writeups — English
+  # ---------------------------------------------------------------------------
+  - name: writeups-en
+    label: "Writeups (EN)"
+    label_singular: "Writeup (EN)"
+    folder: "content/writeups/en"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [date, title, difficulty]
+    summary: "{{title}}  —  {{platform}} / {{difficulty}}"
+    view_filters:
+      - { label: "Drafts", field: draft, pattern: true }
+    fields:
+      - label: "Title"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+        pattern: ['^[a-z0-9][a-z0-9-]*[a-z0-9]$', "Lowercase, numbers and hyphens only"]
+      - label: "Language"
+        name: lang
+        widget: hidden
+        default: "en"
+      - label: "Translation key"
+        name: translation_key
+        widget: string
+        required: true
+      - label: "Type"
+        name: type
+        widget: hidden
+        default: "writeup"
+      - label: "Date"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Platform"
+        name: platform
+        widget: string
+        required: false
+        hint: "HackTheBox, TryHackMe, OWASP, VulnHub..."
+      - label: "Difficulty"
+        name: difficulty
+        widget: select
+        options: ["Easy", "Medium", "Hard", "Insane"]
+        required: false
+      - label: "Operating system"
+        name: os
+        widget: string
+        required: false
+        hint: "Linux, Windows, Docker..."
+      - label: "Techniques"
+        name: techniques
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "Technique", name: technique, widget: string }
+      - label: "CVE"
+        name: cve
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "CVE", name: cve, widget: string }
+      - label: "Draft"
+        name: draft
+        widget: boolean
+        default: false
+      - label: "Summary"
+        name: summary
+        widget: text
+        required: true
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Cover"
+        name: cover
+        widget: image
+        required: false
+      - label: "Table of contents"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Content"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Paginas — Espanol
+  # ---------------------------------------------------------------------------
+  - name: pages-es
+    label: "Paginas (ES)"
+    label_singular: "Pagina (ES)"
+    folder: "content/pages/es"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - label: "Titulo"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+      - label: "Idioma"
+        name: lang
+        widget: hidden
+        default: "es"
+      - label: "Clave de traduccion"
+        name: translation_key
+        widget: string
+        required: true
+      - label: "Tipo"
+        name: type
+        widget: hidden
+        default: "page"
+      - label: "Fecha"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Actualizado"
+        name: updated
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: "Resumen"
+        name: summary
+        widget: text
+        required: false
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Tabla de contenidos"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Contenido"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Pages — English
+  # ---------------------------------------------------------------------------
+  - name: pages-en
+    label: "Pages (EN)"
+    label_singular: "Page (EN)"
+    folder: "content/pages/en"
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}}"
+    fields:
+      - label: "Title"
+        name: title
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+      - label: "Language"
+        name: lang
+        widget: hidden
+        default: "en"
+      - label: "Translation key"
+        name: translation_key
+        widget: string
+        required: true
+      - label: "Type"
+        name: type
+        widget: hidden
+        default: "page"
+      - label: "Date"
+        name: date
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: true
+      - label: "Updated"
+        name: updated
+        widget: datetime
+        format: "YYYY-MM-DD"
+        date_format: "YYYY-MM-DD"
+        time_format: false
+        required: false
+      - label: "Summary"
+        name: summary
+        widget: text
+        required: false
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        required: false
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Table of contents"
+        name: toc
+        widget: boolean
+        default: true
+      - label: "Content"
+        name: body
+        widget: markdown
+
+  # ---------------------------------------------------------------------------
+  # Arsenal (bilingue por campo, un solo archivo por herramienta)
+  # ---------------------------------------------------------------------------
+  - name: arsenal
+    label: "Arsenal"
+    label_singular: "Herramienta"
+    folder: "content/arsenal"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [name, category]
+    summary: "{{name}}  —  {{category}}"
+    fields:
+      - label: "Nombre"
+        name: name
+        widget: string
+        required: true
+      - label: "Slug"
+        name: slug
+        widget: string
+        required: true
+      - label: "URL"
+        name: url
+        widget: string
+        required: true
+        hint: "Sitio oficial de la herramienta"
+      - label: "Categoria"
+        name: category
+        widget: select
+        options:
+          - "network"
+          - "web"
+          - "forensics"
+          - "reversing"
+          - "osint"
+          - "exploitation"
+          - "post-exploitation"
+          - "cloud"
+          - "crypto"
+          - "misc"
+        required: true
+      - label: "Tags"
+        name: tags
+        widget: list
+        allow_add: true
+        field: { label: "Tag", name: tag, widget: string }
+      - label: "Licencia"
+        name: license
+        widget: string
+        required: false
+      - label: "Lenguaje"
+        name: language
+        widget: string
+        required: false
+        hint: "Lenguaje de programacion principal"
+      - label: "Destacada"
+        name: featured
+        widget: boolean
+        default: false
+      - label: "Resumen (ES)"
+        name: summary_es
+        widget: text
+        required: true
+      - label: "Summary (EN)"
+        name: summary_en
+        widget: text
+        required: true
+      - label: "Notas (cuerpo)"
+        name: body
+        widget: markdown
+        hint: "Usa <!-- es --> y <!-- en --> para separar idiomas"
