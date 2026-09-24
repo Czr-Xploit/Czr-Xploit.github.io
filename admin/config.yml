@@ -30,7 +30,7 @@ backend:
   repo: Czr-Xploit/Czr-Xploit.github.io
   branch: main
   # Pon aqui la URL de tu Cloudflare Worker (sveltia-cms-auth)
-  base_url: https://CAMBIA-ESTO.workers.dev
+  base_url: https://sveltia-cms-auth.cesaralbertoprens.workers.dev
   auth_endpoint: oauth
 
 # Donde se guardan las imagenes subidas desde el CMS
