@@ -88,6 +88,7 @@ class SiteConfig:
     # security
     csp: dict[str, str] = field(default_factory=dict)
     permissions_policy: str = ""
+    allowed_origins: list[str] = field(default_factory=list)
 
     # feeds
     feed_items: int = 30
@@ -259,6 +260,7 @@ def load_config(path: str = "site.json", *, source_root: str | None = None) -> S
         budgets=budgets,
         csp=csp,
         permissions_policy=data.get("permissions_policy", DEFAULT_PERMISSIONS_POLICY),
+        allowed_origins=data.get("allowed_origins", []),
         feed_items=int(data.get("feed_items", 30)),
     )
     return config

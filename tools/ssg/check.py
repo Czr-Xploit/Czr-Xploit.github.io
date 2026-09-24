@@ -83,18 +83,20 @@ _EXTERNAL_SUBRESOURCE_RE = re.compile(
 _CSS_EXTERNAL_RE = re.compile(r"""(?:url\(\s*["']?|@import\s+["'])(?P<url>(?:https?:)?//[^"')\s]+)""", re.IGNORECASE)
 
 
-def check_no_external_subresources(root: str) -> list[Finding]:
-    """Nothing the browser loads may come from another origin."""
+def check_no_external_subresources(root: str, allowed_origins: Iterable[str] = ()) -> list[Finding]:
+    """Nothing the browser loads may come from another origin (unless allow-listed)."""
+    allowed = {origin.rstrip("/").lower() for origin in allowed_origins}
     findings: list[Finding] = []
     for path in _walk(root, (".html",)):
         content = _read(path)
         for match in _EXTERNAL_SUBRESOURCE_RE.finditer(content):
             url = match.group("url").strip()
             if url.startswith(("http://", "https://", "//")):
-                # A <link rel="alternate"> to our own absolute feed URL is fine.
                 if "rel=\"alternate\"" in match.group(0) or "rel='alternate'" in match.group(0):
                     continue
                 if "rel=\"canonical\"" in match.group(0):
+                    continue
+                if any(url.lower().startswith(origin + "/") or url.lower() == origin for origin in allowed):
                     continue
                 findings.append(
                     Finding(
@@ -482,7 +484,7 @@ def run_checks(config, builder=None) -> list[Finding]:
     findings: list[Finding] = []
     findings += check_required_files(root)
     findings += check_stdlib_only(repo_root)
-    findings += check_no_external_subresources(root)
+    findings += check_no_external_subresources(root, getattr(config, "allowed_origins", ()))
     findings += check_inline_scripts_and_handlers(root)
     findings += check_csp_present(root, config.csp_header())
     findings += check_internal_links(root)
