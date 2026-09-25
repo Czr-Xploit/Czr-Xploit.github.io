@@ -1,0 +1,12 @@
+name = "sveltia-cms-auth"
+main = "src/index.js"
+compatibility_date = "2026-09-01"
+
+[placement]
+mode = "smart"
+
+[vars]
+GITHUB_CLIENT_ID = "Ov23liZ9Xg7IThdOzeFy"
+ALLOWED_DOMAINS = "czr-xploit.github.io"
+
+# GITHUB_CLIENT_SECRET is set as a secret via `wrangler secret put`
